@@ -1,0 +1,14 @@
+{
+  "name": "meadtools-taplist",
+  "version": "1.0.0",
+  "description": "UI for Taplist project",
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
