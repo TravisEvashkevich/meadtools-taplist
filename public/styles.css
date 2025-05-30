@@ -1,0 +1,67 @@
+:root {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --heading-size: 4rem;
+  --subheading-size: 2rem;
+  --image-width: 300px;
+
+  /* 💡 New variables for customization */
+  --card-width: 300px;
+  --card-border-radius: 12px;
+  --card-padding: 1rem;
+  --card-gap: 2rem;
+  --font-size-body: 1rem;
+  --font-family: sans-serif;
+  --card-border-color: var(--text-color); /* default fallback */
+}
+
+h1 {
+  font-size: var(--heading-size);
+  text-align: center;
+  margin-bottom: var(--card-gap);
+  font-family: var(--font-family);
+}
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  padding: 2rem;
+  margin: 0;
+}
+
+#taplist-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--card-gap);
+  justify-content: center;
+}
+
+.tap-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--card-border-color);
+  border-radius: var(--card-border-radius);
+  padding: var(--card-padding);
+  max-width: var(--card-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.tap-card h2 {
+  font-size: var(--subheading-size);
+  margin: 0.5rem 0;
+}
+
+.card-body img {
+  width: 100%;
+  max-width: var(--image-width);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.card-body p {
+  margin: 0.25rem 0;
+  font-size: var(--font-size-body);
+}

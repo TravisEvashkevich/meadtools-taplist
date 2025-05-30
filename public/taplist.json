@@ -1,0 +1,49 @@
+{
+  "title": "Tap List",
+  "activeTheme": "light",
+  "themes": {
+    "light": {
+      "bg-color": "#ffffff",
+      "text-color": "#000000",
+      "heading-size": 2.5,
+      "subheading-size": 1.2,
+      "image-width": 200,
+      "card-width": 280,
+      "card-border-radius": 0.625,
+      "card-gap": "1.5rem",
+      "card-padding": "1rem",
+      "font-size-body": "1rem",
+      "font-family": "Arial, sans-serif",
+      "card-border-color": "#ccc"
+    },
+    "dark": {
+      "bg-color": "#1a1a1a",
+      "text-color": "#fefefe",
+      "heading-size": 2.5,
+      "subheading-size": 1.2,
+      "image-width": 200,
+      "card-width": 280,
+      "card-border-radius": 0.75,
+      "card-gap": "1.5rem",
+      "card-padding": "1rem",
+      "font-size-body": "1rem",
+      "font-family": "'Courier New', monospace",
+      "card-border-color": "#666"
+    },
+    "retro": {
+      "bg-color": "#fdf0d5",
+      "text-color": "#3a2c29",
+      "heading-size": 3.5,
+      "subheading-size": 1.5,
+      "image-width": 240,
+      "card-width": 320,
+      "card-border-radius": 0.5,
+      "card-gap": "1.75rem",
+      "card-padding": "1.25rem",
+      "font-size-body": "1rem",
+      "font-family": "'Georgia', serif",
+      "card-border-color": "#d46a6a"
+    }
+  },
+  "taps": []
+}
