@@ -1,12 +1,21 @@
 type Tap = {
+  category: string;
   brewName: string;
-  dateAdded: number;
-  labelLink: string;
   style: string;
   abv: number;
+  labelLink: string;
+  dateAdded: number;
+  description: string;
 };
 
 type TapList = Tap[];
+
+type TapData = {
+  title: string;
+  activeTheme: ThemeName;
+  themes: Record<ThemeName, Styles>;
+  taps: TapList;
+};
 
 type ThemeName = "light" | "dark" | "retro";
 
@@ -23,11 +32,4 @@ type Styles = {
   "font-size-body"?: string;
   "font-family"?: string;
   "card-border-color"?: string;
-};
-
-type TapData = {
-  title: string;
-  activeTheme: ThemeName;
-  themes: Record<ThemeName, Styles>;
-  taps: TapList;
 };
