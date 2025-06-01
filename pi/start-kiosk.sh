@@ -1,13 +1,11 @@
 #!/bin/bash
 
-# Start HTTP server in the background
+echo "$(date): Starting server and kiosk" >> /home/meadtools/kiosk.log
 cd /home/meadtools/meadtools-taplist/public
-sudo python3 -m http.server 80 &
+sudo python3 -m http.server 80 >> /home/meadtools/server.log 2>&1 &
 
-# Wait a few seconds to ensure the server is up
 sleep 5
 
-# Launch Chromium in kiosk mode
 chromium-browser --kiosk --app=http://localhost/ \
   --noerrdialogs \
   --disable-infobars \
@@ -15,4 +13,4 @@ chromium-browser --kiosk --app=http://localhost/ \
   --disable-session-crashed-bubble \
   --autoplay-policy=no-user-gesture-required \
   --window-position=0,0 \
-  --start-fullscreen
+  --start-fullscreen >> /home/meadtools/kiosk.log 2>&1
