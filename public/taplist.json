@@ -51,7 +51,7 @@
       "brewName": "Studded Belt Stout",
       "style": "Stout",
       "abv": 6,
-      "labelLink": "../images/defaultImage.png",
+      "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Rich and roasty stout brewed with coffee and chocolate."
     },
@@ -60,7 +60,7 @@
       "brewName": "Studded Belt Stout",
       "style": "Stout",
       "abv": 6,
-      "labelLink": "../images/defaultImage.png",
+      "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Rich and roasty stout brewed with coffee and chocolate."
     },
@@ -69,7 +69,7 @@
       "brewName": "Studded Belt Stout",
       "style": "Stout",
       "abv": 6,
-      "labelLink": "../images/defaultImage.png",
+      "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Rich and roasty stout brewed with coffee and chocolate."
     },
@@ -78,7 +78,7 @@
       "brewName": "Studded Belt Stout",
       "style": "Stout",
       "abv": 6,
-      "labelLink": "../images/defaultImage.png",
+      "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Rich and roasty stout brewed with coffee and chocolate."
     },
@@ -87,7 +87,7 @@
       "brewName": "Studded Belt Stout",
       "style": "Stout",
       "abv": 6,
-      "labelLink": "../images/defaultImage.png",
+      "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Rich and roasty stout brewed with coffee and chocolate."
     },
@@ -96,7 +96,7 @@
       "brewName": "Wake-Up Pils",
       "style": "Pilsner",
       "abv": 4.5,
-      "labelLink": "../images/defaultImage.png",
+      "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Crisp American pilsner with a dry finish."
     }
