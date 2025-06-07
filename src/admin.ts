@@ -116,3 +116,5 @@ const setCSSVariables = (styles: Styles) => {
 };
 
 window.onload = setup;
+
+console.log("tst");

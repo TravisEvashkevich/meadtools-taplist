@@ -107,3 +107,4 @@ const setCSSVariables = (styles) => {
     Object.entries(styles).forEach(([key, value]) => apply(key, value));
 };
 window.onload = setup;
+console.log("tst");
