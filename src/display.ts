@@ -23,13 +23,11 @@ const createCard = (tap: Tap) => {
   const card = document.createElement("div");
   card.className = "tap-card";
 
-  // Left: image
   const cardImg = document.createElement("img");
   cardImg.src = labelLink;
   cardImg.alt = brewName;
   cardImg.className = "tap-image";
 
-  // Right: text content
   const cardContent = document.createElement("div");
   cardContent.className = "tap-content";
 
@@ -83,59 +81,128 @@ const groupByCategory = (taps: Tap[]) => {
   const groups: Record<string, Tap[]> = {};
 
   for (const tap of taps) {
-    const category = tap.category?.trim() || ""; // Empty string = no heading
+    const category = tap.category?.trim() || "";
     if (!groups[category]) groups[category] = [];
     groups[category].push(tap);
   }
 
   return groups;
 };
+
+const createCategoryWrapper = (category: string, taps: Tap[]) => {
+  const wrapper = document.createElement("div");
+  wrapper.classList.add("wrapper");
+
+  if (category) {
+    const categoryHeading = document.createElement("h2");
+    categoryHeading.className = "tap-category";
+    categoryHeading.textContent = category;
+    wrapper.appendChild(categoryHeading);
+  }
+
+  const groupContainer = document.createElement("div");
+  groupContainer.className = "tap-group";
+
+  taps.forEach((tap) => {
+    const card = createCard(tap);
+    groupContainer.appendChild(card);
+  });
+
+  wrapper.appendChild(groupContainer);
+  return wrapper;
+};
+
+const startRotation = (
+  container: HTMLElement,
+  wrappers: HTMLElement[],
+  interval = 10000
+) => {
+  const pages: HTMLElement[][] = [];
+
+  let tempPage: HTMLElement[] = [];
+  let tempHeight = 0;
+  const maxHeight = container.clientHeight;
+  const buffer = maxHeight * 0.05;
+
+  for (const wrapper of wrappers) {
+    container.appendChild(wrapper);
+    const height = wrapper.getBoundingClientRect().height;
+    container.removeChild(wrapper);
+
+    console.log(tempHeight + height, maxHeight - buffer);
+
+    if (tempHeight + height <= maxHeight - buffer || tempPage.length === 0) {
+      tempPage.push(wrapper);
+      tempHeight += height;
+    } else {
+      pages.push([...tempPage]);
+      tempPage = [wrapper];
+      tempHeight = height;
+    }
+  }
+
+  if (tempPage.length > 0) {
+    pages.push(tempPage);
+  }
+
+  let pageIndex = 0;
+
+  const showPage = () => {
+    container.classList.remove("fade-in");
+    container.classList.add("fade-out");
+
+    setTimeout(() => {
+      container.innerHTML = "";
+      for (const wrapper of pages[pageIndex]) {
+        container.appendChild(wrapper);
+      }
+
+      container.classList.remove("fade-out");
+      container.classList.add("fade-in");
+
+      pageIndex = (pageIndex + 1) % pages.length;
+    }, 600);
+  };
+
+  if (pages.length > 1) {
+    showPage();
+    setInterval(showPage, interval);
+  } else {
+    container.innerHTML = "";
+    for (const wrapper of pages[0]) {
+      container.appendChild(wrapper);
+    }
+  }
+};
+
 const handleUpdate = async () => {
   const container = document.getElementById("taplist-container")!;
   const h1 = document.getElementById("title")!;
   try {
     const data = await getData();
-    const { taps, title, activeTheme, themes } = data;
+    const { taps, title, activeTheme, themes, fadeTime } = data;
 
     h1.textContent = title;
 
     const selectedTheme = themes[activeTheme];
+    currentThemes = themes;
     setStyles(selectedTheme);
 
     container.innerHTML = "";
     const grouped = groupByCategory(taps);
 
-    const sortedCategories = Object.keys(grouped).sort((a, b) => {
-      if (a === "") return 1; // Put empty last
-      if (b === "") return -1;
-      return a.localeCompare(b);
-    });
+    const sortedCategories = Object.keys(grouped);
+    // .sort((a, b) => {
+    //   if (a === "") return 1;
+    //   if (b === "") return -1;
+    //   return a.localeCompare(b);
+    // });
 
-    for (const category of sortedCategories) {
-      const group = grouped[category];
+    const wrappers = sortedCategories.map((category) =>
+      createCategoryWrapper(category, grouped[category])
+    );
 
-      const wrapper = document.createElement("div");
-      wrapper.classList.add("wrapper");
-
-      if (category) {
-        const categoryHeading = document.createElement("h2");
-        categoryHeading.className = "tap-category";
-        categoryHeading.textContent = category;
-        wrapper.appendChild(categoryHeading);
-      }
-
-      const groupContainer = document.createElement("div");
-      groupContainer.className = "tap-group";
-
-      group.forEach((tap) => {
-        const card = createCard(tap);
-        groupContainer.appendChild(card);
-      });
-
-      wrapper.appendChild(groupContainer);
-
-      container.appendChild(wrapper);
-    }
+    startRotation(container, wrappers, fadeTime);
   } catch (err) {
     console.error(err);
     container.textContent = "An error has occurred.";
@@ -143,3 +210,4 @@ const handleUpdate = async () => {
 };
 
 window.onload = handleUpdate;
+window.onresize = handleUpdate;

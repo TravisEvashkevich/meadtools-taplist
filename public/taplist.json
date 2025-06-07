@@ -1,6 +1,7 @@
 {
   "title": "Test Title",
-  "activeTheme": "dark",
+  "activeTheme": "light",
+  "fadeTime": 10000,
   "themes": {
     "light": {
       "bg-color": "#ffffff",
@@ -47,42 +48,6 @@
   },
   "taps": [
     {
-      "category": "On Tap",
-      "brewName": "Studded Belt Stout",
-      "style": "Stout",
-      "abv": 6,
-      "labelLink": "./images/defaultImage.png",
-      "dateAdded": 1748557435955,
-      "description": "Rich and roasty stout brewed with coffee and chocolate."
-    },
-    {
-      "category": "On Tap",
-      "brewName": "Studded Belt Stout",
-      "style": "Stout",
-      "abv": 6,
-      "labelLink": "./images/defaultImage.png",
-      "dateAdded": 1748557435955,
-      "description": "Rich and roasty stout brewed with coffee and chocolate."
-    },
-    {
-      "category": "On Tap",
-      "brewName": "Studded Belt Stout",
-      "style": "Stout",
-      "abv": 6,
-      "labelLink": "./images/defaultImage.png",
-      "dateAdded": 1748557435955,
-      "description": "Rich and roasty stout brewed with coffee and chocolate."
-    },
-    {
-      "category": "On Tap",
-      "brewName": "Studded Belt Stout",
-      "style": "Stout",
-      "abv": 6,
-      "labelLink": "./images/defaultImage.png",
-      "dateAdded": 1748557435955,
-      "description": "Rich and roasty stout brewed with coffee and chocolate."
-    },
-    {
       "category": "Bottle",
       "brewName": "Studded Belt Stout",
       "style": "Stout",
@@ -92,13 +57,42 @@
       "description": "Rich and roasty stout brewed with coffee and chocolate."
     },
     {
-      "category": "other",
+      "category": "Other",
       "brewName": "Wake-Up Pils",
       "style": "Pilsner",
       "abv": 4.5,
       "labelLink": "./images/defaultImage.png",
       "dateAdded": 1748557435955,
       "description": "Crisp American pilsner with a dry finish."
+    },
+
+    {
+      "category": "On Tap",
+      "brewName": "Studded Belt Stout",
+      "style": "Stout",
+      "abv": 6,
+      "labelLink": "./images/defaultImage.png",
+      "dateAdded": 1748557435955,
+      "description": "Rich and roasty stout brewed with coffee and chocolate."
+    },
+
+    {
+      "category": "On Tap",
+      "brewName": "Studded Belt Stout",
+      "style": "Stout",
+      "abv": 6,
+      "labelLink": "./images/defaultImage.png",
+      "dateAdded": 1748557435955,
+      "description": "Rich and roasty stout brewed with coffee and chocolate."
+    },
+    {
+      "category": "On Tap",
+      "brewName": "Studded Belt Stout",
+      "style": "Stout",
+      "abv": 6,
+      "labelLink": "./images/defaultImage.png",
+      "dateAdded": 1748557435955,
+      "description": "Rich and roasty stout brewed with coffee and chocolate."
     }
   ]
 }

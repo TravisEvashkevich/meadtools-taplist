@@ -14,6 +14,7 @@ type TapData = {
   title: string;
   activeTheme: ThemeName;
   themes: Record<ThemeName, Styles>;
+  fadeTime: number;
   taps: TapList;
 };
 
