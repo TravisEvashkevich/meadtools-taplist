@@ -5,10 +5,13 @@
   "license": "MIT",
   "author": "",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "./dev.sh",
+    "build": "tsc"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "concurrently": "^9.1.2",
+    "open-cli": "^8.0.0",
+    "typescript": "^5.8.3",
+    "wait-on": "^8.0.3"
   }
 }
