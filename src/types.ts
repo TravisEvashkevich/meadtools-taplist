@@ -18,7 +18,7 @@ type TapData = {
   taps: TapList;
 };
 
-type ThemeName = "light" | "dark" | "retro";
+type ThemeName = "light" | "dark" | "retro" | "custom";
 
 type Styles = {
   "bg-color": string | null;
@@ -34,3 +34,10 @@ type Styles = {
   "font-family"?: string;
   "card-border-color"?: string;
 };
+
+type StringStyleKeys = Extract<
+  {
+    [K in keyof Styles]: Styles[K] extends string | null ? K : never;
+  }[keyof Styles],
+  string
+>;

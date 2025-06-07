@@ -9,12 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 let currentThemes;
-function switchTheme(name) {
-    const newTheme = currentThemes[name];
-    if (newTheme) {
-        setStyles(newTheme);
-    }
-}
 const getData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const res = yield fetch("./taplist.json");

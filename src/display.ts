@@ -1,12 +1,5 @@
 let currentThemes: Record<ThemeName, Styles>;
 
-function switchTheme(name: ThemeName) {
-  const newTheme = currentThemes[name];
-  if (newTheme) {
-    setStyles(newTheme);
-  }
-}
-
 const getData = async () => {
   try {
     const res = await fetch("./taplist.json");

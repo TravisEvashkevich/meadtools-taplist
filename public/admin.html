@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./admin-styles.css" />
+    <script src="./js/admin.js" defer></script>
+    <title>Tap List Admin Dashboard</title>
+  </head>
+  <body>
+    <h1>Admin Dashboard</h1>
+    <label for="theme-toggle">
+      Theme Toggle
+      <select
+        name="theme-toggle"
+        id="theme-toggle"
+        onchange="handleThemeChange(event)"
+      >
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="retro">Retro</option>
+        <option value="custom">Custom</option>
+      </select></label
+    >
+    <div class="hidden" id="custom-theme-editor">
+      <label for="background-color"
+        >Background Color
+        <input type="color" id="bg-color" onchange="handleColorChange(event)"
+      /></label>
+      <label for="text-color"
+        >Text Color
+        <input type="color" id="text-color" onchange="handleColorChange(event)"
+      /></label>
+      <label for="card-border-color">
+        Card Border Color
+        <input
+          type="color"
+          id="card-border-color"
+          onchange="handleColorChange(event)"
+        />
+      </label>
+    </div>
+    <section id="taplist-container">
+      <div class="wrapper">
+        <div class="tap-group">
+          <div class="tap-card">
+            <img
+              src="./images/defaultImage.png"
+              alt="Studded Belt Stout"
+              class="tap-image"
+            />
+            <div class="tap-content">
+              <h2>Studded Belt Stout</h2>
+              <p>Rich and roasty stout brewed with coffee and chocolate.</p>
+              <p>Stout • 6% ABV</p>
+              <p>Kegged on: 5/29/2025</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
