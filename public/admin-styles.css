@@ -1,5 +1,6 @@
 body {
   padding: 1rem;
+  overflow: scroll;
 }
 
 .hidden {
@@ -8,4 +9,181 @@ body {
 
 .tap-card {
   margin-block: 1rem;
+}
+
+/* Style text, number, and select inputs only */
+input:not([type="range"]):not([type="color"]),
+select {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border: 2px solid var(--card-border-color, #ccc);
+  border-radius: var(--card-border-radius, 0.5rem);
+  font-size: var(--font-size-body, 1rem);
+  font-family: var(--font-family, sans-serif);
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+select {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+input:not([type="range"]):not([type="color"]):focus,
+select:focus {
+  outline: none;
+  border-color: var(--text-color);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+input:not([type="range"]):not([type="color"]):hover,
+select:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Label styling */
+label {
+  color: var(--text-color);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+
+/* Match thumb color to your theme text color */
+input[type="range"]::-webkit-slider-thumb {
+  background: var(--text-color);
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: var(--text-color);
+}
+
+input[type="range"]::-ms-thumb {
+  background: var(--text-color);
+}
+input[type="range"] {
+  accent-color: var(--card-border-color);
+}
+
+input[type="color" i] {
+  border-radius: var(--card-border-radius);
+  inline-size: 30px;
+  block-size: 30px;
+
+  /* Can set padding between outer circle and color swatch for Firefox here;
+   * it doesn't support a color-swarch-wrapper pseudoclass
+   */
+  padding: 3px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--card-border-color);
+}
+
+/* Affects area between outer circle and color swatch. Firefox doesn't have an equivalent. */
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 1px;
+}
+
+/* Affects the inner circle, i.e. the current color selection */
+input[type="color" i]::-webkit-color-swatch {
+  border-radius: var(--card-border-radius);
+}
+
+input[type="color" i]::-moz-color-swatch {
+  border-radius: var(--card-border-radius);
+}
+
+#image-gallery {
+  display: flex;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border-color, #ccc);
+  border-radius: var(--card-border-radius, 8px);
+  padding: 1rem;
+}
+
+.image-wrapper img {
+  width: 150px;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+.image-caption {
+  max-width: 150px; /* Match image width or set your preferred fixed width */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 0.25rem;
+  color: var(--text-color, #fff);
+}
+/* Generic button styling */
+button {
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-body, 1rem);
+  color: var(--text-color, #fff);
+  background-color: var(--card-border-color, #444);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--text-color, #fff);
+  color: var(--bg-color, #000);
+}
+
+.file-upload {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 2px dashed var(--text-color);
+  border-radius: var(--card-border-radius, 4px);
+  padding: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.file-upload.dragover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#file-name {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.button {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  border-radius: var(--card-border-radius, 4px);
+  transition: background-color 0.2s ease;
+}
+
+.button:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: var(--bg-color);
 }

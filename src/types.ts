@@ -18,7 +18,7 @@ type TapData = {
   taps: TapList;
 };
 
-type ThemeName = "light" | "dark" | "retro" | "custom";
+type ThemeName = "light" | "dark" | "retro" | "chalkboard" | "custom";
 
 type Styles = {
   "bg-color": string | null;

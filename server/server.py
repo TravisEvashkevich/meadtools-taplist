@@ -4,6 +4,10 @@ import os
 
 app = Flask(__name__, static_folder="../public", static_url_path="")
 
+UPLOAD_FOLDER = os.path.join(app.static_folder, "images")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 TAPLIST_PATH = os.path.join(app.static_folder, "taplist.json")
 
 
@@ -31,6 +35,44 @@ def update_taplist():
         return jsonify({"message": "Taplist updated successfully."}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/upload-image", methods=["POST"])
+def upload_image():
+    if "image" not in request.files:
+        return "No file part", 400
+
+    file = request.files["image"]
+    if file.filename == "":
+        return "No selected file", 400
+
+    filename = file.filename
+    save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    file.save(save_path)
+    return f"Uploaded as /images/{filename}", 200
+
+
+@app.route("/images")
+def list_images():
+    image_dir = app.config["UPLOAD_FOLDER"]
+    try:
+        filenames = [
+            f
+            for f in os.listdir(image_dir)
+            if os.path.isfile(os.path.join(image_dir, f))
+        ]
+        return jsonify(filenames)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/delete-image/<filename>", methods=["DELETE"])
+def delete_image(filename):
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return jsonify({"message": "Image deleted"}), 200
+    return jsonify({"error": "File not found"}), 404
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 {
   "title": "Test Title",
-  "activeTheme": "custom",
+  "activeTheme": "chalkboard",
   "fadeTime": 10000,
   "themes": {
     "light": {
@@ -10,11 +10,11 @@
       "subheading-size": 1.2,
       "image-width": 200,
       "card-width": 350,
-      "card-border-radius": 0.625,
+      "card-border-radius": 1.79,
       "card-gap": "1.5rem",
       "card-padding": "1rem",
       "font-size-body": "1rem",
-      "font-family": "Arial, sans-serif",
+      "font-family": "Georgia, serif",
       "card-border-color": "#ccc"
     },
     "dark": {
@@ -24,40 +24,54 @@
       "subheading-size": 1.2,
       "image-width": 200,
       "card-width": 350,
-      "card-border-radius": 0.75,
+      "card-border-radius": 0.64,
       "card-gap": "1.5rem",
       "card-padding": "1rem",
       "font-size-body": "1rem",
-      "font-family": "'Courier New', monospace",
+      "font-family": "Verdana, sans-serif",
       "card-border-color": "#666"
     },
     "retro": {
-      "bg-color": "#fdf0d5",
-      "text-color": "#3a2c29",
+      "bg-color": "#fffeb3",
+      "text-color": "#666547",
       "heading-size": 3.5,
       "subheading-size": 1.5,
       "image-width": 240,
       "card-width": 350,
-      "card-border-radius": 0.5,
+      "card-border-radius": 0,
       "card-gap": "1.75rem",
       "card-padding": "1.25rem",
       "font-size-body": "1rem",
-      "font-family": "'Georgia', serif",
-      "card-border-color": "#d46a6a"
+      "font-family": "Courier New, monospace",
+      "card-border-color": "#4CAF50"
+    },
+    "chalkboard": {
+      "bg-color": "#2d3b2c",
+      "text-color": "#f0f0f0",
+      "heading-size": 3,
+      "subheading-size": 1.5,
+      "image-width": 240,
+      "card-width": 360,
+      "card-border-radius": 0.5,
+      "card-gap": "1.5rem",
+      "card-padding": "1rem",
+      "font-size-body": "1rem",
+      "font-family": "Chalkboard, sans-serif",
+      "card-border-color": "#ffffff88"
     },
     "custom": {
-      "bg-color": "#ffffff",
-      "text-color": "#000000",
+      "bg-color": "#6a6868",
+      "text-color": "#fefefe",
       "heading-size": 2.5,
       "subheading-size": 1.2,
       "image-width": 200,
       "card-width": 350,
-      "card-border-radius": 0.625,
+      "card-border-radius": 0,
       "card-gap": "1.5rem",
       "card-padding": "1rem",
       "font-size-body": "1rem",
-      "font-family": "Arial, sans-serif",
-      "card-border-color": "#ccc"
+      "font-family": "system-ui",
+      "card-border-color": "#757070"
     }
   },
   "taps": [
