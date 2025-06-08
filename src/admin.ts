@@ -289,7 +289,7 @@ const createImageSelect = (selected: string) => {
   wrapper.style.gap = "1rem";
 
   const select = document.createElement("select");
-  select.id = `image-select-${crypto.randomUUID()}`;
+  select.id = `image-select-${Date.now()}`;
   select.style.maxWidth = "300px"; // avoid overflow
 
   const preview = document.createElement("img");
