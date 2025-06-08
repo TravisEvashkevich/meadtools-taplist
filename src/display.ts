@@ -1,4 +1,5 @@
 let currentThemes: Record<ThemeName, Styles>;
+let lastUpdated: number | null = null;
 
 const getData = async () => {
   try {
@@ -196,6 +197,7 @@ const handleUpdate = async () => {
     );
 
     startRotation(container, wrappers, fadeTime);
+    lastUpdated = data.lastUpdated ?? null;
   } catch (err) {
     console.error(err);
     container.textContent = "An error has occurred.";
@@ -204,3 +206,21 @@ const handleUpdate = async () => {
 
 window.onload = handleUpdate;
 window.onresize = handleUpdate;
+
+const pollForChanges = async () => {
+  try {
+    const res = await fetch(`./taplist.json?ts=${Date.now()}`, {
+      cache: "no-store",
+    });
+    const data = await res.json();
+    const updated = data.lastUpdated ?? null;
+
+    if (updated !== null && updated !== lastUpdated) {
+      location.reload();
+    }
+  } catch (err) {
+    console.warn("Failed to check for updates", err);
+  }
+};
+
+setInterval(pollForChanges, 5000);

@@ -1,4 +1,5 @@
 type Tap = {
+  id: number;
   category: string;
   brewName: string;
   style: string;
@@ -16,6 +17,7 @@ type TapData = {
   themes: Record<ThemeName, Styles>;
   fadeTime: number;
   taps: TapList;
+  lastUpdated?: number;
 };
 
 type ThemeName = "light" | "dark" | "retro" | "chalkboard" | "custom";

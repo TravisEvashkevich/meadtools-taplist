@@ -11,6 +11,17 @@
   </head>
   <body>
     <h1>Admin Dashboard</h1>
+    <label for="fade-time-seconds" class="setting-label">
+      Time per Page (seconds)
+      <input
+        id="fade-time-seconds"
+        type="number"
+        min="1"
+        step="1"
+        onchange="handleFadeTimeChange()"
+        class="setting-input"
+      />
+    </label>
     <label for="theme-toggle">
       Theme Toggle
       <select
@@ -44,7 +55,7 @@
       </label>
     </div>
     <label for="font-family-select"
-      >Font Family:
+      >Font Family
       <select
         id="font-family-select"
         name="font-family"
@@ -111,9 +122,53 @@
     </form>
     <h3>Label Art Gallery</h3>
     <div id="image-gallery"></div>
-    <label for="image-select"
-      >Label Image
-      <select id="image-select"></select
-    ></label>
+
+    <h3>Taplist</h3>
+    <div id="on-tap"></div>
+
+    <datalist id="style-options">
+      <!-- Mead Styles -->
+      <option value="Traditional Mead" />
+      <option value="Melomel" />
+      <option value="Metheglin" />
+      <option value="Cyser" />
+      <option value="Pyment" />
+      <option value="Bochet" />
+      <option value="Hydromel" />
+      <option value="Sack Mead" />
+      <option value="Acerglyn" />
+      <option value="Braggot" />
+
+      <!-- Beer Styles -->
+      <option value="IPA" />
+      <option value="Pale Ale" />
+      <option value="Stout" />
+      <option value="Porter" />
+      <option value="Lager" />
+      <option value="Pilsner" />
+      <option value="Hefeweizen" />
+      <option value="Saison" />
+      <option value="Amber Ale" />
+      <option value="Brown Ale" />
+      <option value="Barleywine" />
+      <option value="Kolsch" />
+      <option value="Bock" />
+      <option value="Witbier" />
+      <option value="Dubbel" />
+    </datalist>
+    <datalist id="category-options">
+      <option value="On Tap" />
+      <option value="Coming Soon" />
+      <option value="Rotating Tap" />
+      <option value="Seasonal" />
+      <option value="Nitro" />
+      <option value="Limited Release" />
+      <option value="Guest Tap" />
+      <option value="Bottle Only" />
+      <option value="Cellar Reserve" />
+      <option value="Specialty" />
+    </datalist>
+    <button id="new-tap-button">Add New Tap</button>
+    <div id="new-tap-form-container"></div>
   </body>
 </html>

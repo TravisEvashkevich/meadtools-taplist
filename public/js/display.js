@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 let currentThemes;
+let lastUpdated = null;
 const getData = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const res = yield fetch("./taplist.json");
@@ -142,6 +143,7 @@ const startRotation = (container, wrappers, interval = 10000) => {
     }
 };
 const handleUpdate = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const container = document.getElementById("taplist-container");
     const h1 = document.getElementById("title");
     try {
@@ -161,6 +163,7 @@ const handleUpdate = () => __awaiter(void 0, void 0, void 0, function* () {
         // });
         const wrappers = sortedCategories.map((category) => createCategoryWrapper(category, grouped[category]));
         startRotation(container, wrappers, fadeTime);
+        lastUpdated = (_a = data.lastUpdated) !== null && _a !== void 0 ? _a : null;
     }
     catch (err) {
         console.error(err);
@@ -169,3 +172,20 @@ const handleUpdate = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 window.onload = handleUpdate;
 window.onresize = handleUpdate;
+const pollForChanges = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const res = yield fetch(`./taplist.json?ts=${Date.now()}`, {
+            cache: "no-store",
+        });
+        const data = yield res.json();
+        const updated = (_a = data.lastUpdated) !== null && _a !== void 0 ? _a : null;
+        if (updated !== null && updated !== lastUpdated) {
+            location.reload();
+        }
+    }
+    catch (err) {
+        console.warn("Failed to check for updates", err);
+    }
+});
+setInterval(pollForChanges, 5000);
