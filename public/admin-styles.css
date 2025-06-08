@@ -164,6 +164,7 @@ button:hover {
   padding: 1rem;
   transition: background-color 0.2s ease;
   max-width: 80%;
+  margin-block: 1rem;
 }
 
 .file-upload.dragover {
@@ -310,4 +311,8 @@ button:disabled {
   border: 1px solid var(--card-border-color, #ccc);
   background: var(--bg-color, #fff);
   color: var(--text-color, #000);
+}
+
+#new-tap-form-container {
+  margin-block: 1rem;
 }
