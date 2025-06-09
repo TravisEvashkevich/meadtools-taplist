@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "",
   "scripts": {
-    "dev": "./dev.sh",
+    "dev": " PORT=8000 ./dev.sh",
     "build": "tsc"
   },
   "devDependencies": {
