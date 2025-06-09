@@ -63,6 +63,13 @@ const setup = async () => {
     setCSSVariables(currentTheme);
     const fadeInput = document.getElementById("fade-time-seconds");
     fadeInput.value = (data.fadeTime / 1000).toString();
+    const titleInput = document.getElementById("taplist-name");
+    titleInput.value = data.title;
+    titleInput.addEventListener("change", (e) => {
+        const input = e.target;
+        data.title = input.value;
+        persistUpdates();
+    });
 };
 const handleColorChange = (e) => {
     const input = e.target;

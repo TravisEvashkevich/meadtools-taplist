@@ -1,5 +1,5 @@
 {
-  "title": "Test Title",
+  "title": "Taplist",
   "activeTheme": "dark",
   "fadeTime": 15000,
   "themes": {
@@ -74,5 +74,6 @@
       "card-border-color": "#757070"
     }
   },
-  "taps": []
+  "taps": [],
+  "lastUpdated": 1749435549597
 }
