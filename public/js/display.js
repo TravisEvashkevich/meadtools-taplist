@@ -1,25 +1,16 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let currentThemes;
 let lastUpdated = null;
-const getData = () => __awaiter(void 0, void 0, void 0, function* () {
+const getData = async () => {
     try {
-        const res = yield fetch("./taplist.json");
-        const data = yield res.json();
+        const res = await fetch("./taplist.json");
+        const data = await res.json();
         return data;
     }
     catch (err) {
         throw err;
     }
-});
+};
 const createCard = (tap) => {
     const { brewName, labelLink, abv, dateAdded, style, description } = tap;
     const card = document.createElement("div");
@@ -65,10 +56,9 @@ const setStyles = (styles) => {
     Object.entries(styles).forEach(([key, value]) => apply(key, value));
 };
 const groupByCategory = (taps) => {
-    var _a;
     const groups = {};
     for (const tap of taps) {
-        const category = ((_a = tap.category) === null || _a === void 0 ? void 0 : _a.trim()) || "";
+        const category = tap.category?.trim() || "";
         if (!groups[category])
             groups[category] = [];
         groups[category].push(tap);
@@ -142,12 +132,11 @@ const startRotation = (container, wrappers, interval = 10000) => {
         }
     }
 };
-const handleUpdate = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const handleUpdate = async () => {
     const container = document.getElementById("taplist-container");
     const h1 = document.getElementById("title");
     try {
-        const data = yield getData();
+        const data = await getData();
         const { taps, title, activeTheme, themes, fadeTime } = data;
         h1.textContent = title;
         const selectedTheme = themes[activeTheme];
@@ -163,23 +152,22 @@ const handleUpdate = () => __awaiter(void 0, void 0, void 0, function* () {
         // });
         const wrappers = sortedCategories.map((category) => createCategoryWrapper(category, grouped[category]));
         startRotation(container, wrappers, fadeTime);
-        lastUpdated = (_a = data.lastUpdated) !== null && _a !== void 0 ? _a : null;
+        lastUpdated = data.lastUpdated ?? null;
     }
     catch (err) {
         console.error(err);
         container.textContent = "An error has occurred.";
     }
-});
+};
 window.onload = handleUpdate;
 window.onresize = handleUpdate;
-const pollForChanges = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const pollForChanges = async () => {
     try {
-        const res = yield fetch(`./taplist.json?ts=${Date.now()}`, {
+        const res = await fetch(`./taplist.json?ts=${Date.now()}`, {
             cache: "no-store",
         });
-        const data = yield res.json();
-        const updated = (_a = data.lastUpdated) !== null && _a !== void 0 ? _a : null;
+        const data = await res.json();
+        const updated = data.lastUpdated ?? null;
         if (updated !== null && updated !== lastUpdated) {
             location.reload();
         }
@@ -187,5 +175,5 @@ const pollForChanges = () => __awaiter(void 0, void 0, void 0, function* () {
     catch (err) {
         console.warn("Failed to check for updates", err);
     }
-});
+};
 setInterval(pollForChanges, 5000);

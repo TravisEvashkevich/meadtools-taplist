@@ -1,16 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "None", // <- Not a module
-    "outDir": "public/js",
-    "rootDir": "src",
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "strict": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "isolatedModules": false, // <- Important for non-modules
-    "moduleResolution": "node",
-    "noEmitOnError": false // <- Optional: still emit even with type errors
+    "outDir": "public/js"
   },
-  "include": ["src/**/*"]
+  "include": ["src"]
 }

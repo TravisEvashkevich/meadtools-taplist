@@ -21,10 +21,11 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install dependencies and build
-        run: |
-          npm ci
-          npm run build
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile TypeScript
+        run: npm run build
 
       - name: Prepare release package
         run: |

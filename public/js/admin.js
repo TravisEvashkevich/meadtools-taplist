@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let data;
 let images;
 const themeToggle = document.querySelector("#theme-toggle");
@@ -18,23 +9,22 @@ const textColorInput = customThemeEditor.querySelector("#text-color");
 const cardBorderColorInput = customThemeEditor.querySelector("#card-border-color");
 const cardBorderRadiusInput = document.querySelector("#card-border-radius");
 const tapContainer = document.querySelector("#on-tap");
-const getConfigData = () => __awaiter(void 0, void 0, void 0, function* () {
+const getConfigData = async () => {
     try {
-        const res = yield fetch("./taplist.json");
-        const data = yield res.json();
+        const res = await fetch("./taplist.json");
+        const data = await res.json();
         return data;
     }
     catch (err) {
         throw err;
     }
-});
-const updateTheme = (theme) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+};
+const updateTheme = async (theme) => {
     data.activeTheme = theme;
-    fontToggle.value = (_a = data.themes[theme]["font-family"]) !== null && _a !== void 0 ? _a : "";
+    fontToggle.value = data.themes[theme]["font-family"] ?? "";
     setCSSVariables(data.themes[theme]);
-    yield updateTaplist(data);
-});
+    await updateTaplist(data);
+};
 const handleThemeChange = (e) => {
     const select = e.target;
     const theme = select.value;
@@ -46,13 +36,12 @@ const handleThemeChange = (e) => {
     }
     updateTheme(theme);
 };
-const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
-    data = yield getConfigData();
-});
-const setup = () => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
-    yield fetchData();
-    images = yield loadImages();
+const fetchData = async () => {
+    data = await getConfigData();
+};
+const setup = async () => {
+    await fetchData();
+    images = await loadImages();
     updateTaplistItems();
     const newTapBtn = document.getElementById("new-tap-button");
     const newTapFormContainer = document.getElementById("new-tap-form-container");
@@ -63,18 +52,18 @@ const setup = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     const currentTheme = data.themes[data.activeTheme];
     themeToggle.value = data.activeTheme;
-    fontToggle.value = (_a = currentTheme["font-family"]) !== null && _a !== void 0 ? _a : "";
+    fontToggle.value = currentTheme["font-family"] ?? "";
     if (data.activeTheme === "custom")
         updateCustomColors();
     if (!data.themes.custom) {
         data.themes.custom = currentTheme;
         updateTheme(data.activeTheme);
     }
-    cardBorderRadiusInput.value = ((_b = currentTheme["card-border-radius"]) !== null && _b !== void 0 ? _b : 0).toString();
+    cardBorderRadiusInput.value = (currentTheme["card-border-radius"] ?? 0).toString();
     setCSSVariables(currentTheme);
     const fadeInput = document.getElementById("fade-time-seconds");
     fadeInput.value = (data.fadeTime / 1000).toString();
-});
+};
 const handleColorChange = (e) => {
     const input = e.target;
     const key = input.id;
@@ -82,30 +71,29 @@ const handleColorChange = (e) => {
     setCSSVariables(data.themes["custom"]);
     updateTaplist(data);
 };
-const updateTaplist = (data) => __awaiter(void 0, void 0, void 0, function* () {
+const updateTaplist = async (data) => {
     try {
-        yield fetch("/update-taplist", {
+        await fetch("/update-taplist", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(Object.assign(Object.assign({}, data), { lastUpdated: Date.now() })),
+            body: JSON.stringify({ ...data, lastUpdated: Date.now() }),
         });
     }
     catch (error) {
         console.error(error);
     }
     finally {
-        yield fetchData();
+        await fetchData();
     }
-});
+};
 const updateCustomColors = () => {
-    var _a, _b, _c;
     customThemeEditor.classList.remove("hidden");
     const currentTheme = data.themes.custom;
-    backgroundColorInput.value = (_a = currentTheme["bg-color"]) !== null && _a !== void 0 ? _a : "";
-    textColorInput.value = (_b = currentTheme["text-color"]) !== null && _b !== void 0 ? _b : "";
-    cardBorderColorInput.value = (_c = currentTheme["card-border-color"]) !== null && _c !== void 0 ? _c : "";
+    backgroundColorInput.value = currentTheme["bg-color"] ?? "";
+    textColorInput.value = currentTheme["text-color"] ?? "";
+    cardBorderColorInput.value = currentTheme["card-border-color"] ?? "";
 };
 const setCSSVariables = (styles) => {
     const defaults = {
@@ -136,29 +124,29 @@ const handleFontChange = (e) => {
     setCSSVariables(data.themes[data.activeTheme]);
     updateTaplist(data); // POST updated theme
 };
-const updateRangeInput = (e) => __awaiter(void 0, void 0, void 0, function* () {
+const updateRangeInput = async (e) => {
     const input = e.target;
     data.themes[data.activeTheme]["card-border-radius"] = parseFloat(input.value);
     setCSSVariables(data.themes[data.activeTheme]);
-});
-const persistUpdates = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield updateTaplist(data); // Save to JSON
-});
-const uploadImage = (e) => __awaiter(void 0, void 0, void 0, function* () {
+};
+const persistUpdates = async () => {
+    await updateTaplist(data); // Save to JSON
+};
+const uploadImage = async (e) => {
     e.preventDefault();
     const form = document.getElementById("image-upload-form");
     const formData = new FormData(form); // ✅ use the form directly
-    const res = yield fetch("/upload-image", {
+    const res = await fetch("/upload-image", {
         method: "POST",
         body: formData,
     });
-    const result = yield res.text();
+    const result = await res.text();
     console.log(result);
-    yield loadImages();
-});
-const loadImages = () => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield fetch("/images");
-    const images = yield res.json();
+    await loadImages();
+};
+const loadImages = async () => {
+    const res = await fetch("/images");
+    const images = await res.json();
     const gallery = document.getElementById("image-gallery");
     gallery.innerHTML = "";
     images.forEach((filename) => {
@@ -173,22 +161,22 @@ const loadImages = () => __awaiter(void 0, void 0, void 0, function* () {
         caption.textContent = filename;
         const del = document.createElement("button");
         del.textContent = "Delete";
-        del.onclick = () => __awaiter(void 0, void 0, void 0, function* () {
+        del.onclick = async () => {
             if (filename === "defaultImage.png") {
                 alert("Cannot delete default image.");
                 return;
             }
             const userConfirmation = confirm("Are you sure? This action cannot be undone.");
             if (userConfirmation) {
-                yield fetch(`/delete-image/${filename}`, { method: "DELETE" });
+                await fetch(`/delete-image/${filename}`, { method: "DELETE" });
                 loadImages();
             }
-        });
+        };
         wrapper.append(img, caption, del);
         gallery.appendChild(wrapper);
     });
     return images;
-});
+};
 const fileInput = document.getElementById("file-input");
 const fileNameDisplay = document.getElementById("file-name");
 const dropZone = document.getElementById("drop-zone");
@@ -198,8 +186,7 @@ const handleFile = (file) => {
 };
 // Regular input change
 fileInput.addEventListener("change", () => {
-    var _a;
-    const file = (_a = fileInput.files) === null || _a === void 0 ? void 0 : _a[0];
+    const file = fileInput.files?.[0];
     if (file)
         handleFile(file);
 });
@@ -212,10 +199,9 @@ dropZone.addEventListener("dragleave", () => {
     dropZone.classList.remove("dragover");
 });
 dropZone.addEventListener("drop", (e) => {
-    var _a, _b;
     e.preventDefault();
     dropZone.classList.remove("dragover");
-    const file = (_b = (_a = e.dataTransfer) === null || _a === void 0 ? void 0 : _a.files) === null || _b === void 0 ? void 0 : _b[0];
+    const file = e.dataTransfer?.files?.[0];
     if (file) {
         fileInput.files = e.dataTransfer.files;
         handleFile(file);
@@ -283,7 +269,7 @@ const createInput = (labelText, value, type = "text", list, step) => {
 const generateTapItem = (tap, container) => {
     const tapContainer = document.createElement("form");
     tapContainer.classList.add("tap-info");
-    const original = Object.assign({}, tap);
+    const original = { ...tap };
     const { label: categoryLabel, input: categoryInput } = createInput("Category", tap.category, "text", "category-options");
     const { label: styleLabel, input: styleInput } = createInput("Style", tap.style, "text", "style-options");
     const { label: nameLabel, input: nameInput } = createInput("Name", tap.brewName);
@@ -367,38 +353,38 @@ const generateTapItem = (tap, container) => {
         moveUpBtn.classList.remove("hidden");
         moveDownBtn.classList.remove("hidden");
     };
-    deleteBtn.onclick = () => __awaiter(void 0, void 0, void 0, function* () {
+    deleteBtn.onclick = async () => {
         const userConfirmation = confirm("Are you sure? This action cannot be undone.");
         if (userConfirmation) {
             const filtered = data.taps.filter((t) => t.id !== tap.id);
             data.taps = filtered;
-            yield persistUpdates();
-            yield fetchData();
+            await persistUpdates();
+            await fetchData();
             updateTaplistItems();
         }
-    });
-    moveUpBtn.onclick = () => __awaiter(void 0, void 0, void 0, function* () {
+    };
+    moveUpBtn.onclick = async () => {
         const index = data.taps.findIndex((t) => t.id === tap.id);
         if (index > 0) {
             [data.taps[index - 1], data.taps[index]] = [
                 data.taps[index],
                 data.taps[index - 1],
             ];
-            yield persistUpdates();
+            await persistUpdates();
             updateTaplistItems();
         }
-    });
-    moveDownBtn.onclick = () => __awaiter(void 0, void 0, void 0, function* () {
+    };
+    moveDownBtn.onclick = async () => {
         const index = data.taps.findIndex((t) => t.id === tap.id);
         if (index < data.taps.length - 1) {
             [data.taps[index], data.taps[index + 1]] = [
                 data.taps[index + 1],
                 data.taps[index],
             ];
-            yield persistUpdates();
+            await persistUpdates();
             updateTaplistItems();
         }
-    });
+    };
     tapContainer.onsubmit = (e) => {
         e.preventDefault();
         const updated = {
