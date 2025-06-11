@@ -6,7 +6,6 @@ sudo apt update && sudo apt full-upgrade -y
 
 echo "🔧 Installing dependencies..."
 sudo apt install -y \
-  git \
   python3 \
   python3-pip \
   python3-venv \
@@ -14,12 +13,26 @@ sudo apt install -y \
   x11-xserver-utils \
   unclutter \
   lightdm \
-  openbox
+  openbox \
+  curl \
+  unzip
 
-echo "📁 Cloning taplist repo..."
+echo "📦 Downloading latest taplist release..."
 cd ~
-git clone https://github.com/ljreaux/meadtools-taplist.git
-cd meadtools-taplist
+mkdir -p taplist-server
+cd taplist-server
+
+latest_url=$(curl -s https://api.github.com/repos/ljreaux/meadtools-taplist/releases/latest \
+  | grep browser_download_url \
+  | grep flask-bundle.zip \
+  | cut -d '"' -f 4)
+
+echo "🌐 Downloading from $latest_url..."
+curl -L "$latest_url" -o release.zip
+
+echo "📂 Extracting release..."
+unzip release.zip
+rm release.zip
 
 echo "🐍 Setting up Python virtual environment..."
 cd server
@@ -37,8 +50,8 @@ Description=MeadTools Taplist Server
 After=network.target
 
 [Service]
-WorkingDirectory=/home/pi/meadtools-taplist/server
-ExecStart=/home/pi/meadtools-taplist/server/venv/bin/python server.py
+WorkingDirectory=/home/pi/taplist-server/server
+ExecStart=/home/pi/taplist-server/server/venv/bin/python server.py
 Restart=always
 User=pi
 Environment=FLASK_ENV=production
