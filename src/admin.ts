@@ -1,76 +1,80 @@
 let data: TapData;
 let images: string[];
 
-const themeToggle = document.querySelector(
-  "#theme-toggle"
+const newTapBtn = document.getElementById("new-tap-button")!;
+const newTapFormContainer = document.getElementById("new-tap-form-container")!;
+const themeToggle = document.getElementById(
+  "theme-toggle"
 )! as HTMLSelectElement;
-const fontToggle = document.querySelector(
-  "#font-family-select"
+const fontToggle = document.getElementById(
+  "font-family-select"
 )! as HTMLSelectElement;
-const customThemeEditor = document.querySelector("#custom-theme-editor")!;
-const backgroundColorInput = customThemeEditor.querySelector(
-  "#bg-color"
+const customThemeEditor = document.getElementById("custom-theme-editor")!;
+const backgroundColorInput = document.getElementById(
+  "bg-color"
 )! as HTMLInputElement;
-const textColorInput = customThemeEditor.querySelector(
-  "#text-color"
+const textColorInput = document.getElementById(
+  "text-color"
 )! as HTMLInputElement;
-const cardBorderColorInput = customThemeEditor.querySelector(
-  "#card-border-color"
+const cardBorderColorInput = document.getElementById(
+  "card-border-color"
 )! as HTMLInputElement;
-const cardBorderRadiusInput = document.querySelector(
-  "#card-border-radius"
+const cardBorderRadiusInput = document.getElementById(
+  "card-border-radius"
 )! as HTMLInputElement;
+const titleInput = document.getElementById("taplist-name") as HTMLInputElement;
+const form = document.getElementById("image-upload-form") as HTMLFormElement;
+const tapContainer = document.getElementById("on-tap")! as HTMLDivElement;
+const fileInput = document.getElementById("file-input") as HTMLInputElement;
+const fileNameDisplay = document.getElementById("file-name")!;
+const dropZone = document.getElementById("drop-zone")!;
 
-const tapContainer = document.querySelector("#on-tap")! as HTMLDivElement;
-
-const getConfigData = async () => {
+const fetchData = async () => {
   try {
     const res = await fetch("./taplist.json");
-    const data: TapData = await res.json();
-    return data;
+    const parsed: TapData = await res.json();
+    data = parsed;
   } catch (err) {
     throw err;
   }
 };
 
-const updateTheme = async (theme: ThemeName) => {
-  data.activeTheme = theme;
-  fontToggle.value = data.themes[theme]["font-family"] ?? "";
-  setCSSVariables(data.themes[theme]);
-  await updateTaplist(data);
-};
-
-const handleThemeChange = (e: Event) => {
-  const select = e.target as HTMLSelectElement;
-  const theme = select.value as ThemeName;
-  if (theme === "custom") {
-    updateCustomColors();
-  } else {
-    customThemeEditor.classList.add("hidden");
-  }
-  updateTheme(theme);
-};
-
-const fetchData = async () => {
-  data = await getConfigData();
-};
-
 const setup = async () => {
   await fetchData();
   images = await loadImages();
-  updateTaplistItems();
-  const newTapBtn = document.getElementById("new-tap-button")!;
-  const newTapFormContainer = document.getElementById(
-    "new-tap-form-container"
-  )!;
-  newTapBtn.addEventListener("click", () => {
+  updateTaplist();
+
+  newTapBtn.onclick = () => {
     if (!newTapFormContainer.innerHTML) {
       generateNewTapForm(newTapFormContainer);
     }
-  });
+  };
   const currentTheme = data.themes[data.activeTheme];
   themeToggle.value = data.activeTheme;
+  themeToggle.onchange = (e) => {
+    const select = e.target as HTMLSelectElement;
+    const theme = select.value as ThemeName;
+    if (theme === "custom") {
+      updateCustomColors();
+    } else {
+      customThemeEditor.classList.add("hidden");
+    }
+    updateTheme(theme);
+  };
+
   fontToggle.value = currentTheme["font-family"] ?? "";
+  fontToggle.onchange = (e) => {
+    const select = e.target as HTMLSelectElement;
+    const font = select.value;
+
+    data.themes[data.activeTheme]["font-family"] = font;
+    setCSSVariables(data.themes[data.activeTheme]);
+    persistUpdates(); // POST updated theme
+  };
+
+  [backgroundColorInput, textColorInput, cardBorderColorInput].forEach(
+    (input) => (input.onchange = handleColorChange)
+  );
 
   if (data.activeTheme === "custom") updateCustomColors();
 
@@ -79,9 +83,18 @@ const setup = async () => {
     updateTheme(data.activeTheme);
   }
 
+  cardBorderRadiusInput.onchange = persistUpdates;
   cardBorderRadiusInput.value = (
     currentTheme["card-border-radius"] ?? 0
   ).toString();
+  cardBorderRadiusInput.oninput = async (e) => {
+    const input = e.target as HTMLInputElement;
+
+    data.themes[data.activeTheme]["card-border-radius"] = parseFloat(
+      input.value
+    );
+    setCSSVariables(data.themes[data.activeTheme]);
+  };
 
   setCSSVariables(currentTheme);
 
@@ -89,39 +102,67 @@ const setup = async () => {
     "fade-time-seconds"
   ) as HTMLInputElement;
   fadeInput.value = (data.fadeTime / 1000).toString();
-
-  const titleInput = document.getElementById(
-    "taplist-name"
-  ) as HTMLInputElement;
+  fadeInput.onchange = (e) => {
+    const input = e.target as HTMLInputElement;
+    const seconds = parseInt(input.value, 10);
+    if (!isNaN(seconds) && seconds > 0) {
+      data.fadeTime = seconds * 1000; // Convert to milliseconds
+      persistUpdates();
+    }
+  };
   titleInput.value = data.title;
-  titleInput.addEventListener("change", (e) => {
+
+  titleInput.onchange = (e) => {
     const input = e.target as HTMLInputElement;
     data.title = input.value;
     persistUpdates();
-  });
-};
-const handleColorChange = (e: Event) => {
-  const input = e.target as HTMLInputElement;
-  const key = input.id as StringStyleKeys;
-  data.themes.custom[key] = input.value;
-  setCSSVariables(data.themes["custom"]);
-  updateTaplist(data);
-};
+  };
 
-const updateTaplist = async (data: TapData) => {
-  try {
-    await fetch("/update-taplist", {
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form); // ✅ use the form directly
+
+    const res = await fetch("/upload-image", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...data, lastUpdated: Date.now() }),
+      body: formData,
     });
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await fetchData();
-  }
+
+    const result = await res.text();
+    console.log(result);
+    await loadImages();
+  };
+
+  // Show file name
+  const handleFile = (file: File) => {
+    fileNameDisplay.textContent = file.name;
+  };
+
+  // Regular input change
+  fileInput.onchange = () => {
+    const file = fileInput.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  // Drag & drop logic
+  dropZone.ondragover = (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+  };
+
+  dropZone.ondragleave = () => {
+    dropZone.classList.remove("dragover");
+  };
+
+  dropZone.ondrop = (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      fileInput.files = e.dataTransfer.files;
+      handleFile(file);
+    }
+  };
 };
 
 const updateCustomColors = () => {
@@ -162,39 +203,20 @@ const setCSSVariables = (styles: Styles) => {
   );
 };
 
-const handleFontChange = (e: Event) => {
-  const select = e.target as HTMLSelectElement;
-  const font = select.value;
-
-  data.themes[data.activeTheme]["font-family"] = font;
-  setCSSVariables(data.themes[data.activeTheme]);
-  updateTaplist(data); // POST updated theme
-};
-
-const updateRangeInput = async (e: Event) => {
-  const input = e.target as HTMLInputElement;
-
-  data.themes[data.activeTheme]["card-border-radius"] = parseFloat(input.value);
-  setCSSVariables(data.themes[data.activeTheme]);
-};
-
 const persistUpdates = async () => {
-  await updateTaplist(data); // Save to JSON
-};
-
-const uploadImage = async (e: Event) => {
-  e.preventDefault();
-  const form = document.getElementById("image-upload-form") as HTMLFormElement;
-  const formData = new FormData(form); // ✅ use the form directly
-
-  const res = await fetch("/upload-image", {
-    method: "POST",
-    body: formData,
-  });
-
-  const result = await res.text();
-  console.log(result);
-  await loadImages();
+  try {
+    await fetch("/update-taplist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...data, lastUpdated: Date.now() }),
+    });
+  } catch (error) {
+    console.error(error);
+  } finally {
+    await fetchData();
+  }
 };
 
 const loadImages = async () => {
@@ -241,43 +263,7 @@ const loadImages = async () => {
   return images;
 };
 
-const fileInput = document.getElementById("file-input") as HTMLInputElement;
-const fileNameDisplay = document.getElementById("file-name")!;
-const dropZone = document.getElementById("drop-zone")!;
-
-// Show file name
-const handleFile = (file: File) => {
-  fileNameDisplay.textContent = file.name;
-};
-
-// Regular input change
-fileInput.addEventListener("change", () => {
-  const file = fileInput.files?.[0];
-  if (file) handleFile(file);
-});
-
-// Drag & drop logic
-dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropZone.classList.add("dragover");
-});
-
-dropZone.addEventListener("dragleave", () => {
-  dropZone.classList.remove("dragover");
-});
-
-dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
-
-  const file = e.dataTransfer?.files?.[0];
-  if (file) {
-    fileInput.files = e.dataTransfer.files;
-    handleFile(file);
-  }
-});
-
-const updateTaplistItems = () => {
+const updateTaplist = () => {
   tapContainer.innerHTML = "";
 
   if (data.taps.length > 0)
@@ -322,9 +308,9 @@ const createImageSelect = (selected: string) => {
   });
 
   // Update preview on change
-  select.addEventListener("change", () => {
+  select.onchange = () => {
     preview.src = select.value;
-  });
+  };
 
   wrapper.append(select, preview);
   label.appendChild(wrapper);
@@ -482,7 +468,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
       data.taps = filtered;
       await persistUpdates();
       await fetchData();
-      updateTaplistItems();
+      updateTaplist();
     }
   };
 
@@ -494,7 +480,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
         data.taps[index - 1],
       ];
       await persistUpdates();
-      updateTaplistItems();
+      updateTaplist();
     }
   };
 
@@ -506,7 +492,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
         data.taps[index],
       ];
       await persistUpdates();
-      updateTaplistItems();
+      updateTaplist();
     }
   };
 
@@ -652,7 +638,7 @@ const generateNewTapForm = (container: HTMLElement) => {
     form.reset(); // Clears all inputs
     dateInput.value = today; // Re-set the date after reset
     labelImageSelect.value = "./images/defaultImage.png";
-    updateTaplistItems();
+    updateTaplist();
   };
 
   const buttonRow = document.createElement("div");
@@ -673,15 +659,19 @@ const generateNewTapForm = (container: HTMLElement) => {
   container.appendChild(form);
 };
 
-function handleFadeTimeChange() {
-  const input = document.getElementById(
-    "fade-time-seconds"
-  ) as HTMLInputElement;
-  const seconds = parseInt(input.value, 10);
-  if (!isNaN(seconds) && seconds > 0) {
-    data.fadeTime = seconds * 1000; // Convert to milliseconds
-    persistUpdates();
-  }
-}
+const handleColorChange = (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const key = input.id as StringStyleKeys;
+  data.themes.custom[key] = input.value;
+  setCSSVariables(data.themes["custom"]);
+  persistUpdates();
+};
+
+const updateTheme = async (theme: ThemeName) => {
+  data.activeTheme = theme;
+  fontToggle.value = data.themes[theme]["font-family"] ?? "";
+  setCSSVariables(data.themes[theme]);
+  await persistUpdates();
+};
 
 window.onload = setup;

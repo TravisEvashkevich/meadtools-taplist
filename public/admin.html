@@ -23,17 +23,12 @@
         type="number"
         min="1"
         step="1"
-        onchange="handleFadeTimeChange()"
         class="setting-input"
       />
     </label>
     <label for="theme-toggle">
       Theme Toggle
-      <select
-        name="theme-toggle"
-        id="theme-toggle"
-        onchange="handleThemeChange(event)"
-      >
+      <select name="theme-toggle" id="theme-toggle">
         <option value="light">Light</option>
         <option value="dark">Dark</option>
         <option value="retro">Retro</option>
@@ -43,29 +38,19 @@
     >
     <div class="hidden" id="custom-theme-editor">
       <label for="background-color"
-        >Background Color
-        <input type="color" id="bg-color" onchange="handleColorChange(event)"
+        >Background Color <input type="color" id="bg-color"
       /></label>
       <label for="text-color"
-        >Text Color
-        <input type="color" id="text-color" onchange="handleColorChange(event)"
+        >Text Color <input type="color" id="text-color"
       /></label>
       <label for="card-border-color">
         Card Border Color
-        <input
-          type="color"
-          id="card-border-color"
-          onchange="handleColorChange(event)"
-        />
+        <input type="color" id="card-border-color" />
       </label>
     </div>
     <label for="font-family-select"
       >Font Family
-      <select
-        id="font-family-select"
-        name="font-family"
-        onchange="handleFontChange(event)"
-      >
+      <select id="font-family-select" name="font-family">
         <option value="system-ui">System UI</option>
         <option value="sans-serif">Sans-serif</option>
         <option value="serif">Serif</option>
@@ -88,8 +73,6 @@
         min="0"
         max="4"
         step="0.01"
-        oninput="updateRangeInput(event)"
-        onchange="persistUpdates()"
       />
     </label>
 
@@ -112,11 +95,7 @@
         </div>
       </div>
     </section>
-    <form
-      id="image-upload-form"
-      enctype="multipart/form-data"
-      onsubmit="uploadImage(event)"
-    >
+    <form id="image-upload-form" enctype="multipart/form-data">
       <label for="image">Upload Label Image:</label>
       <div class="file-upload" id="drop-zone">
         <label for="file-input" class="button">Choose File</label>
