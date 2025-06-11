@@ -143,20 +143,18 @@ const handleUpdate = async () => {
         currentThemes = themes;
         setStyles(selectedTheme);
         container.innerHTML = "";
+        if (taps.length === 0) {
+            throw new Error("Please Fill out your taplist!");
+        }
         const grouped = groupByCategory(taps);
         const sortedCategories = Object.keys(grouped);
-        // .sort((a, b) => {
-        //   if (a === "") return 1;
-        //   if (b === "") return -1;
-        //   return a.localeCompare(b);
-        // });
         const wrappers = sortedCategories.map((category) => createCategoryWrapper(category, grouped[category]));
         startRotation(container, wrappers, fadeTime);
         lastUpdated = data.lastUpdated ?? null;
     }
     catch (err) {
         console.error(err);
-        container.textContent = "An error has occurred.";
+        container.textContent = err.message;
     }
 };
 window.onload = handleUpdate;
