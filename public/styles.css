@@ -9,6 +9,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: var(--font-family);
+  cursor: none;
 }
 
 #taplist {
