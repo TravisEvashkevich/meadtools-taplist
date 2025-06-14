@@ -75,6 +75,12 @@ def delete_image(filename):
     return jsonify({"error": "File not found"}), 404
 
 
+# Serve admin.html for any unknown routes (like captive portal redirects)
+@app.errorhandler(404)
+def redirect_to_admin(e):
+    return send_from_directory(app.static_folder, "admin.html"), 200
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, port=port, host="0.0.0.0")

@@ -6,6 +6,7 @@ USER_HOME=$(eval echo "~$USER")
 INSTALL_DIR="$USER_HOME/taplist-server"
 SERVICE_NAME="taplist.service"
 PYTHON_EXEC="python3"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "🧼 Updating system..."
 sudo apt update && sudo apt full-upgrade -y
@@ -30,7 +31,6 @@ cd "$INSTALL_DIR"
 
 echo "📦 Downloading latest taplist release..."
 latest_url=$(curl -s https://api.github.com/repos/ljreaux/meadtools-taplist/releases/latest | jq -r '.assets[] | select(.name == "flask-bundle.zip") | .browser_download_url')
-
 curl -L "$latest_url" -o release.zip
 
 echo "📂 Extracting release..."
@@ -105,6 +105,9 @@ Name=Kiosk Launch
 Exec=$KIOSK_SCRIPT
 X-GNOME-Autostart-enabled=true
 EOF
+
+echo "📡 Running setup-access-point.sh to configure local Wi-Fi..."
+bash "$SCRIPT_DIR/setup-access-point.sh"
 
 echo "✅ Setup complete. Server should now be running on http://localhost:5000"
 echo "🧪 Reboot the Pi to verify everything starts automatically."
