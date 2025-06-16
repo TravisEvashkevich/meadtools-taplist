@@ -88,7 +88,7 @@ const startRotation = (container, wrappers, interval = 10000) => {
     let tempPage = [];
     let tempHeight = 0;
     const maxHeight = container.clientHeight;
-    const buffer = maxHeight * 0.05;
+    const buffer = maxHeight * 0.1;
     for (const wrapper of wrappers) {
         container.appendChild(wrapper);
         const height = wrapper.getBoundingClientRect().height;
