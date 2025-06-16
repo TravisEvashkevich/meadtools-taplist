@@ -6,6 +6,16 @@
 # https://www.raspberrypi.com/documentation/computers/configuration.html#setting-up-a-routed-wireless-access-point
 # https://github.com/TomHumphries/RaspberryPiHotspot
 
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+for file in dhcpcd.conf dnsmasq.conf hostapd.conf; do
+  if [ ! -f "$SCRIPT_DIR/$file" ]; then
+    echo "❌ Missing required config file: $file"
+    exit 1
+  fi
+done
+
 # --- Install
 sudo apt-get update
 # dhcpcd is a DHCP client. It should come pre-installed by default, but that
@@ -24,7 +34,7 @@ sudo systemctl stop hostapd
 
 # Raspberry Pi acts as router on wirless network
 # As it runs a DHCP Server, the Raspi needs a static IP address
-cat ./dhcpcd.conf | sudo tee -a /etc/dhcpcd.conf > /dev/null
+sudo cp "$SCRIPT_DIR/dhcpcd.conf" /etc/dhcpcd.conf
 sudo systemctl restart dhcpcd
 
 # --- Configure DHCP server (dnsmasq)
@@ -32,7 +42,7 @@ if test -f /etc/dnsmasq.conf; then
     # Backup file
     sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 fi
-sudo cp ./dnsmasq.conf /etc/dnsmasq.conf
+sudo cp "$SCRIPT_DIR/dnsmasq.conf" /etc/dnsmasq.conf
 
 # Don't let dnsmasq alter your /etc/resolv.conf file
 # https://raspberrypi.stackexchange.com/questions/37439/proper-way-to-prevent-dnsmasq-from-overwriting-dns-server-list-supplied-by-dhcp
@@ -47,7 +57,7 @@ sudo systemctl restart dnsmasq
 sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 # Add redirect for all inbound http traffic for 192.168.4.1
 # (which we defined earlier in dnsmasq.conf)
-# to our Node.js server on port 3000 (192.168.4.1:3000)
+# to our Flask server on port 5000 (192.168.4.1:5000)
 sudo iptables -t nat -I PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.4.1:5000
 # Comment out this line if you want to access the Pi via SSH when being connected
 # to the Wifi Access Point. You can use: ssh -i "path/to/private/key/file" pi@192.168.4.1
@@ -59,7 +69,11 @@ sudo netfilter-persistent save
 # --- Configure access point (hostapd)
 # Make sure wlan is not blocked on raspi
 sudo rfkill unblock wlan
-sudo cp ./hostapd.conf /etc/hostapd/hostapd.conf
+sudo cp "$SCRIPT_DIR/hostapd.conf" /etc/hostapd/hostapd.conf
 sudo systemctl unmask hostapd
 sudo systemctl enable hostapd
 sudo systemctl start hostapd
+
+echo "✅ Wi-Fi access point setup complete!"
+echo "🔌 SSID: MeadTools Taplist"
+echo "🌐 Admin panel should be available at http://192.168.4.1"
