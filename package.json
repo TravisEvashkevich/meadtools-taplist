@@ -1,16 +1,21 @@
 {
   "name": "meadtools-taplist",
-  "version": "1.0.0",
+  "version": "1.2.8",
   "description": "UI for Taplist project",
   "license": "MIT",
   "author": "",
   "scripts": {
     "dev": " PORT=8000 ./dev.sh",
-    "build": "tsc"
+    "build": "tsc",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch && git push --follow-tags",
+    "release:minor": "standard-version --release-as minor && git push --follow-tags",
+    "release:major": "standard-version --release-as major && git push --follow-tags"
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
     "open-cli": "^8.0.0",
+    "standard-version": "^9.5.0",
     "typescript": "^5.8.3",
     "wait-on": "^8.0.3"
   }
