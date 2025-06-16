@@ -58,7 +58,7 @@ sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 # Add redirect for all inbound http traffic for 192.168.4.1
 # (which we defined earlier in dnsmasq.conf)
 # to our Flask server on port 5000 (192.168.4.1:5000)
-sudo iptables -t nat -I PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.4.1:5000
+sudo iptables -t nat -D PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.4.1:5000 2>/dev/null || true
 # Comment out this line if you want to access the Pi via SSH when being connected
 # to the Wifi Access Point. You can use: ssh -i "path/to/private/key/file" pi@192.168.4.1
 # sudo iptables -t nat -I PREROUTING -p tcp --dport 22 -j ACCEPT
