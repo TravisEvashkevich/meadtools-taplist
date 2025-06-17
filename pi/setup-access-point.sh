@@ -4,6 +4,10 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# --- Ensure Wi-Fi country is set to prevent rfkill from blocking wlan
+sudo raspi-config nonint do_wifi_country US
+
+# --- Check required config files
 for file in dhcpcd.conf dnsmasq.conf hostapd.conf; do
   if [ ! -f "$SCRIPT_DIR/$file" ]; then
     echo "❌ Missing required config file: $file"
@@ -41,7 +45,7 @@ sudo systemctl enable dnsmasq
 sudo systemctl unmask hostapd
 sudo systemctl enable hostapd
 
-# --- Create fallback IP assignment service
+# --- Create fallback static IP assignment service
 echo "🧷 Creating fallback static IP service for wlan0..."
 
 sudo tee /etc/systemd/system/wlan0-static.service > /dev/null <<'EOF'
@@ -68,6 +72,14 @@ sudo systemctl start wlan0-static.service
 # --- Ensure dnsmasq waits for wlan0 IP
 sudo mkdir -p /etc/systemd/system/dnsmasq.service.d
 sudo tee /etc/systemd/system/dnsmasq.service.d/wait-for-wlan0.conf > /dev/null <<EOF
+[Unit]
+After=wlan0-static.service
+Requires=wlan0-static.service
+EOF
+
+# --- Ensure hostapd waits for wlan0 IP
+sudo mkdir -p /etc/systemd/system/hostapd.service.d
+sudo tee /etc/systemd/system/hostapd.service.d/wait-for-wlan0.conf > /dev/null <<EOF
 [Unit]
 After=wlan0-static.service
 Requires=wlan0-static.service
