@@ -44,13 +44,15 @@ sudo systemctl enable hostapd
 # --- Create fallback IP assignment service
 echo "🧷 Creating fallback static IP service for wlan0..."
 
-sudo tee /etc/systemd/system/wlan0-static.service > /dev/null <<EOF
+sudo tee /etc/systemd/system/wlan0-static.service > /dev/null <<'EOF'
 [Unit]
 Description=Assign static IP to wlan0
-After=network.target
+Before=network-pre.target
+Wants=network-pre.target
 
 [Service]
 Type=oneshot
+ExecStartPre=/usr/sbin/rfkill unblock wlan
 ExecStart=/sbin/ip addr add 192.168.4.1/24 dev wlan0
 ExecStartPost=/sbin/ip link set wlan0 up
 RemainAfterExit=yes
