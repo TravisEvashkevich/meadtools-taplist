@@ -79,3 +79,24 @@ sudo systemctl start hostapd
 echo "✅ Wi-Fi access point setup complete!"
 echo "🔌 SSID: MeadTools Taplist"
 echo "🌐 Admin panel should be available at http://192.168.4.1"
+
+
+echo "🧷 Creating fallback static IP service for wlan0..."
+
+sudo tee /etc/systemd/system/wlan0-static.service > /dev/null <<EOF
+[Unit]
+Description=Assign static IP to wlan0
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ip addr add 192.168.4.1/24 dev wlan0
+ExecStartPost=/bin/bash -c 'ip link set wlan0 up'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable wlan0-static.service
