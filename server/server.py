@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, redirect
 import json
 import os
 
@@ -75,10 +75,15 @@ def delete_image(filename):
     return jsonify({"error": "File not found"}), 404
 
 
-# Serve admin.html for any unknown routes (like captive portal redirects)
-@app.errorhandler(404)
-def redirect_to_admin(e):
-    return send_from_directory(app.static_folder, "admin.html"), 200
+# Captive portal triggers
+@app.route("/generate_204")
+@app.route("/gen_204")
+@app.route("/hotspot-detect.html")
+@app.route("/ncsi.txt")
+@app.route("/connecttest.txt")
+@app.route("/library/test/success.html")
+def captive_portal():
+    return redirect("/admin")
 
 
 if __name__ == "__main__":

@@ -109,5 +109,25 @@ EOF
 echo "📡 Running setup-access-point.sh to configure local Wi-Fi..."
 bash "$SCRIPT_DIR/setup-access-point.sh"
 
+echo "📶 Ensuring Wi-Fi stays unblocked on boot..."
+
+sudo tee /etc/systemd/system/unblock-wifi.service > /dev/null <<EOF
+[Unit]
+Description=Unblock Wi-Fi at boot
+After=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/rfkill unblock wlan
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable unblock-wifi.service
+
+
 echo "✅ Setup complete. Server should now be running on http://localhost:5000"
 echo "🧪 Reboot the Pi to verify everything starts automatically."
