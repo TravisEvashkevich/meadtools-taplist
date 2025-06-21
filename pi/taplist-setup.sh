@@ -52,6 +52,12 @@ After=network.target
 [Service]
 WorkingDirectory=$INSTALL_DIR/server
 ExecStart=$INSTALL_DIR/server/venv/bin/$PYTHON_EXEC server.py
+ExecStartPost=/bin/bash -c '
+  systemctl daemon-reload
+  systemctl restart wlan0-static.service
+  systemctl restart hostapd
+  systemctl restart dnsmasq
+'
 Restart=always
 User=$USER
 Environment=FLASK_ENV=production
