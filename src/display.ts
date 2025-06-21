@@ -185,7 +185,15 @@ const handleUpdate = async () => {
     container.innerHTML = "";
 
     if (taps.length === 0) {
-      throw new Error("Please Fill out your taplist!");
+      const message = `<div style="display: flex; align-items: center; justify-content: center; width: 100vw; text-align: center;">
+  Please Visit&nbsp;
+  <a href="http://meadtools-taplist.local:5000/admin" style="color: var(--text-color);">
+    http://meadtools-taplist.local:5000/admin
+  </a>
+  &nbsp;or connect to "Taplist Setup" WiFi network to fill out your taplist!
+</div>`;
+
+      throw new Error(message);
     }
 
     const grouped = groupByCategory(taps);
@@ -200,7 +208,7 @@ const handleUpdate = async () => {
     lastUpdated = data.lastUpdated ?? null;
   } catch (err) {
     console.error(err);
-    container.textContent = (err as Error).message;
+    container.innerHTML = (err as Error).message;
   }
 };
 
