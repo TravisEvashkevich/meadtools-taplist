@@ -44,6 +44,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 echo "🧷 Creating systemd service..."
+POST_SCRIPT="$USER_HOME/taplist-setup/pi/post-taplist-start.sh"
 sudo tee /etc/systemd/system/$SERVICE_NAME > /dev/null <<EOF
 [Unit]
 Description=MeadTools Taplist Server and Kiosk
@@ -52,7 +53,7 @@ After=network.target
 [Service]
 WorkingDirectory=$INSTALL_DIR/server
 ExecStart=$INSTALL_DIR/server/venv/bin/$PYTHON_EXEC server.py
-ExecStartPost=$USER_HOME/taplist-setup/pi/post-taplist-start.sh
+ExecStartPost=$POST_SCRIPT
 Restart=always
 User=$USER
 Environment=FLASK_ENV=production
