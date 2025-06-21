@@ -10,8 +10,9 @@ PCMANFM_CONF="$USER_HOME/.config/pcmanfm/LXDE-pi/pcmanfm.conf"
 
 echo "🖼️ Setting desktop background..."
 
-# Ensure config dir exists
+# Ensure config dir and file exist
 mkdir -p "$(dirname "$PCMANFM_CONF")"
+touch "$PCMANFM_CONF"
 
 # Modify or add wallpaper config
 if grep -q '^wallpaper=' "$PCMANFM_CONF"; then
@@ -22,7 +23,11 @@ fi
 
 # Remove wastebasket icon
 echo "🗑️ Removing wastebasket from desktop..."
-sed -i 's/^show_trash=.*/show_trash=0/' "$PCMANFM_CONF" || echo "show_trash=0" >> "$PCMANFM_CONF"
+if grep -q '^show_trash=' "$PCMANFM_CONF"; then
+  sed -i 's/^show_trash=.*/show_trash=0/' "$PCMANFM_CONF"
+else
+  echo "show_trash=0" >> "$PCMANFM_CONF"
+fi
 
 echo "🔗 Adding desktop shortcut to Taplist..."
 cat <<EOF > "$DESKTOP_FILE"
@@ -39,6 +44,6 @@ EOF
 chmod +x "$DESKTOP_FILE"
 
 echo "🔄 Restarting desktop to apply changes..."
-pcmanfm --reconfigure
+pcmanfm --reconfigure || echo "⚠️ pcmanfm reconfigure failed—try rebooting manually if needed."
 
 echo "✅ Desktop customized successfully."
