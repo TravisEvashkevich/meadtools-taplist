@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e
+
 LOGFILE="/tmp/post-taplist.log"
 {
-  echo "--- Post Start $(date) ---"
+  echo "--- $(date): post-taplist-start.sh ---"
   systemctl daemon-reexec
   systemctl daemon-reload
 
