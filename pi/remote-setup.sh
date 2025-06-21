@@ -11,8 +11,7 @@ cd "$CLONE_DIR"
 git sparse-checkout set pi
 
 cd pi
-chmod +x taplist-setup.sh setup-access-point.sh
-chmod +x taplist-setup.sh setup-access-point.sh pi/post-taplist-start.sh
+chmod +x taplist-setup.sh setup-access-point.sh post-taplist-start.sh
 
 echo "🚀 Running main setup script..."
 ./taplist-setup.sh
