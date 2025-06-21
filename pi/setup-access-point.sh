@@ -103,5 +103,5 @@ sudo systemctl restart hostapd
 
 # --- Done
 echo "✅ Wi-Fi access point setup complete!"
-echo "🔌 SSID: MeadTools Taplist"
+echo "🔌 SSID: Taplist Setup"
 echo "🌐 Admin panel should be available at http://192.168.4.1"
