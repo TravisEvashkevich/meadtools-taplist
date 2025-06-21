@@ -1,44 +1,58 @@
 # MeadTools Taplist Setup (Raspberry Pi)
 
-This folder contains everything needed to set up the MeadTools Taplist Display System on a Raspberry Pi running Raspberry Pi OS (Bookworm recommended).
+This project powers the **MeadTools Taplist Display System**, a full-screen taplist for HDMI displays with local editing over Wi-Fi. You can install it two ways:
 
-## What This Setup Does
+---
 
-- Runs a local Flask server to host the taplist
-- Launches a full-screen kiosk display on boot
-- Creates a local Wi-Fi access point for editing the taplist
-- Redirects connected devices to the admin panel via captive portal
+## 🚀 Option 1: Use the Prebuilt OS Image (Fastest)
 
-## Requirements
+Download the full Raspberry Pi OS image with everything preinstalled and ready to go.
 
-- Raspberry Pi 3 or newer
-- Raspberry Pi OS (Bookworm recommended)
-- HDMI display
-- Optional: USB keyboard or SSH access for setup
+**➡️ [Get the Latest Image Release](https://github.com/ljreaux/meadtools-taplist/releases)** (look for `MeadTools-Taplist.img.gz`)
 
-## One-Line Install
+### How to Flash the Image
 
-Run this on your Raspberry Pi (connected to Ethernet or preconfigured Wi-Fi):
+1. Download the `.img.gz` file from the release
+2. Flash it to a microSD card (16 GB or larger) using:
+   - [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+   - OR [Balena Etcher](https://etcher.io/)
+3. Insert the card and boot your Raspberry Pi
+4. The taplist display will launch automatically, and a Wi-Fi network named **Taplist Admin** will appear for editing
+
+---
+
+## 🛠 Option 2: Install on Existing Raspberry Pi OS
+
+Use this if you want to add the taplist to a Pi that’s already running Raspberry Pi OS (Bookworm recommended).
+
+### One-Line Install
+
+Run this on your Raspberry Pi (connected to Ethernet or Wi-Fi):
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/ljreaux/meadtools-taplist/main/pi/remote-setup.sh)
 ```
 
-## This Will:
+This will:
 
-- Downloads only the setup files
-- Installs necessary dependencies
-- Installs the server and sets up autostart kiosk mode
-- Sets up the access point and captive portal for admin access
+- Download setup files
+- Install dependencies
+- Set up the Flask server
+- Configure autostart in kiosk mode
+- Enable a Wi-Fi access point with captive portal
 
-## What’s Installed
+---
 
-- Flask server on localhost:5000
-- Chromium kiosk on boot, showing the taplist
-- Access point on wlan0 (SSID: MeadTools Taplist)
-- Captive portal that shows the admin panel when connecting to the Pi’s Wi-Fi
+## ✅ What This Setup Provides
 
-## Files Included
+- Fullscreen taplist on HDMI at boot
+- Flask server at `localhost:5000`
+- Admin panel via local Wi-Fi access point
+- No internet connection required for editing
+
+---
+
+## 📦 Files Included
 
 | File                    | Purpose                                                |
 | ----------------------- | ------------------------------------------------------ |
@@ -49,12 +63,18 @@ bash <(curl -s https://raw.githubusercontent.com/ljreaux/meadtools-taplist/main/
 | `dhcpcd.conf`           | Sets a static IP address for the Pi's Wi-Fi            |
 | `remote-setup.sh`       | Minimal bootstrap script for downloading setup files   |
 
-## Server Bundle (Downloaded During Setup)
+---
 
-The taplist server (Flask app + public files) is automatically downloaded from the latest GitHub release. It contains:
+## 📁 Server Bundle (Downloaded During Setup)
 
-- `server.py` – The main Python Flask server
-- `public/index.html` – Displayed on the HDMI screen (kiosk mode)
-- `public/admin.html` – Shown to users connected to the access point
-- `public/taplist.json` – Tap list data (editable via admin UI)
-- `public/images/` – Uploaded artwork for each tap
+Includes:
+
+- `server.py` – Flask backend
+- `public/index.html` – HDMI-facing display
+- `public/admin.html` – Admin panel via Wi-Fi
+- `public/taplist.json` – Tap list data (auto-edited)
+- `public/images/` – Custom tap artwork
+
+---
+
+Need help? [Open an issue](https://github.com/ljreaux/meadtools-taplist/issues).
