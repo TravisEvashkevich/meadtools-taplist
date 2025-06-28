@@ -12,7 +12,7 @@ const getData = async () => {
     }
 };
 const createCard = (tap) => {
-    const { brewName, labelLink, abv, dateAdded, style, description } = tap;
+    const { brewName, labelLink, abv, dateAdded, style, description, containerType, } = tap;
     const card = document.createElement("div");
     card.className = "tap-card";
     const cardImg = document.createElement("img");
@@ -28,7 +28,13 @@ const createCard = (tap) => {
     const abvText = document.createElement("p");
     abvText.textContent = `${style} • ${abv}% ABV`;
     const date = document.createElement("p");
-    date.textContent = `Kegged on: ${new Date(dateAdded).toLocaleDateString("en-US")}`;
+    const label = {
+        keg: "Kegged on",
+        bottle: "Bottled on",
+        can: "Canned on",
+        growler: "Filled on",
+    }[containerType] || "Added on";
+    date.textContent = `${label}: ${new Date(dateAdded).toLocaleDateString("en-US")}`;
     cardContent.append(cardTitle, desc, abvText, date);
     card.append(cardImg, cardContent);
     return card;

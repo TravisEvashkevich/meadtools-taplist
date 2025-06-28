@@ -374,6 +374,21 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
     createImageSelect(tap.labelLink);
   labelImageSelect.disabled = true;
 
+  const containerTypeLabel = document.createElement("label");
+  containerTypeLabel.textContent = "Container Type";
+
+  const containerTypeSelect = document.createElement("select");
+  ["Keg", "Bottle", "Can", "Growler"].forEach((type) => {
+    const option = document.createElement("option");
+    option.value = type.toLowerCase(); // store lowercase value
+    option.textContent = type; // show capitalized label
+    containerTypeSelect.appendChild(option);
+  });
+  containerTypeSelect.disabled = true;
+  containerTypeSelect.value = tap.containerType;
+
+  containerTypeLabel.appendChild(containerTypeSelect);
+
   const descLabel = document.createElement("label");
   const descInput = document.createElement("textarea");
   descInput.disabled = true;
@@ -423,6 +438,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
       dateInput,
       descInput,
       labelImageSelect,
+      containerTypeSelect,
     ].forEach((el) => (el.disabled = false));
     editBtn.classList.add("hidden");
     moveUpBtn.classList.add("hidden");
@@ -450,6 +466,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
       dateInput,
       descInput,
       labelImageSelect,
+      containerTypeSelect,
     ].forEach((el) => (el.disabled = true));
     cancelBtn.classList.add("hidden");
     submitBtn.classList.add("hidden");
@@ -508,6 +525,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
       labelLink: labelImageSelect.value,
       dateAdded: new Date(dateInput.value).getTime(),
       description: descInput.value,
+      containerType: containerTypeSelect.value,
     };
 
     const index = data.taps.findIndex((t) => t.id === tap.id);
@@ -525,6 +543,7 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
       dateInput,
       descInput,
       labelImageSelect,
+      containerTypeSelect,
     ].forEach((el) => (el.disabled = true));
     cancelBtn.classList.add("hidden");
     submitBtn.classList.add("hidden");
@@ -550,8 +569,9 @@ const generateTapItem = (tap: Tap, container: HTMLDivElement) => {
     categoryLabel,
     styleLabel,
     abvLabel,
-    labelImageLabel,
     dateLabel,
+    containerTypeLabel,
+    labelImageLabel,
     descLabel,
     buttonRow
   );
@@ -592,14 +612,31 @@ const generateNewTapForm = (container: HTMLElement) => {
     "date"
   );
 
-  [nameInput, categoryInput, styleInput, abvInput, dateInput].forEach(
-    (input) => (input.disabled = false)
-  );
-
   const { label: labelImageLabel, select: labelImageSelect } =
     createImageSelect("./images/defaultImage.png");
   labelImageSelect.disabled = false;
 
+  const containerTypeLabel = document.createElement("label");
+  containerTypeLabel.textContent = "Container Type";
+
+  const containerTypeSelect = document.createElement("select");
+  ["Keg", "Bottle", "Can", "Growler"].forEach((type) => {
+    const option = document.createElement("option");
+    option.value = type.toLowerCase(); // store lowercase value
+    option.textContent = type; // show capitalized label
+    containerTypeSelect.appendChild(option);
+  });
+  containerTypeSelect.disabled = false;
+
+  containerTypeLabel.appendChild(containerTypeSelect);
+  [
+    nameInput,
+    categoryInput,
+    styleInput,
+    abvInput,
+    dateInput,
+    containerTypeSelect,
+  ].forEach((input) => (input.disabled = false));
   const descLabel = document.createElement("label");
   const descInput = document.createElement("textarea");
   descInput.disabled = false;
@@ -631,6 +668,7 @@ const generateNewTapForm = (container: HTMLElement) => {
       labelLink: labelImageSelect.value,
       dateAdded: new Date(dateInput.value).getTime(),
       description: descInput.value,
+      containerType: containerTypeSelect.value,
     };
 
     data.taps.push(newTap);
@@ -650,8 +688,9 @@ const generateNewTapForm = (container: HTMLElement) => {
     categoryLabel,
     styleLabel,
     abvLabel,
-    labelImageLabel,
     dateLabel,
+    containerTypeLabel,
+    labelImageLabel,
     descLabel,
     buttonRow
   );
