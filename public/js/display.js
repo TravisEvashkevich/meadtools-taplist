@@ -150,13 +150,21 @@ const handleUpdate = async () => {
         setStyles(selectedTheme);
         container.innerHTML = "";
         if (taps.length === 0) {
-            const message = `<div style="display: flex; align-items: center; justify-content: center; width: 100vw; text-align: center;">
-  Please Visit&nbsp;
-  <a href="http://meadtools-taplist.local:5000/admin" style="color: var(--text-color);">
-    http://meadtools-taplist.local:5000/admin
-  </a>
-  &nbsp;or connect to "Taplist Setup" WiFi network to fill out your taplist!
-</div>`;
+            const baseUrl = window.location.href.replace(/\/+$/, "");
+            const adminUrl = `${baseUrl}/admin`;
+            const message = `
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100vw; text-align: center;">
+    <p>
+      Connect to the "<strong>Taplist Setup</strong>" WiFi network to set up your display.
+    </p>
+    <p>
+      Or, if your Taplist is connected to your local network, visit
+      <a href="${adminUrl}" style="color: var(--text-color);" title="Only works if your Pi is connected to your network.">
+        ${adminUrl}
+      </a>
+    </p>
+  </div>
+`;
             throw new Error(message);
         }
         const grouped = groupByCategory(taps);
