@@ -13,12 +13,16 @@ const getData = async () => {
 };
 const createCard = (tap) => {
     const { brewName, labelLink, abv, dateAdded, style, description, containerType, } = tap;
+    const fallbackImage = "./images/defaultImage.png";
     const card = document.createElement("div");
     card.className = "tap-card";
     const cardImg = document.createElement("img");
-    cardImg.src = labelLink;
+    cardImg.src = labelLink || fallbackImage;
     cardImg.alt = brewName;
     cardImg.className = "tap-image";
+    cardImg.onerror = () => {
+        cardImg.src = fallbackImage;
+    };
     const cardContent = document.createElement("div");
     cardContent.className = "tap-content";
     const cardTitle = document.createElement("h2");
@@ -117,15 +121,19 @@ const startRotation = (container, wrappers, interval = 10000) => {
     const showPage = () => {
         container.classList.remove("fade-in");
         container.classList.add("fade-out");
-        setTimeout(() => {
-            container.innerHTML = "";
-            for (const wrapper of pages[pageIndex]) {
-                container.appendChild(wrapper);
-            }
-            container.classList.remove("fade-out");
-            container.classList.add("fade-in");
-            pageIndex = (pageIndex + 1) % pages.length;
-        }, 600);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                container.innerHTML = "";
+                for (const wrapper of pages[pageIndex]) {
+                    container.appendChild(wrapper);
+                }
+                requestAnimationFrame(() => {
+                    container.classList.remove("fade-out");
+                    container.classList.add("fade-in");
+                });
+                pageIndex = (pageIndex + 1) % pages.length;
+            }, 300);
+        });
     };
     if (pages.length > 1) {
         showPage();
@@ -147,7 +155,12 @@ const handleUpdate = async () => {
         h1.textContent = title;
         const selectedTheme = themes[activeTheme];
         currentThemes = themes;
-        setStyles(selectedTheme);
+        const combinedStyles = {
+            ...selectedTheme,
+            "font-size-body": data["font-size-body"],
+            "card-min-width": data["card-min-width"],
+        };
+        setStyles(combinedStyles);
         container.innerHTML = "";
         if (taps.length === 0) {
             const baseUrl = window.location.href.replace(/\/+$/, "");

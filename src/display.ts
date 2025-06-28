@@ -22,13 +22,18 @@ const createCard = (tap: Tap) => {
     containerType,
   } = tap;
 
+  const fallbackImage = "./images/defaultImage.png";
+
   const card = document.createElement("div");
   card.className = "tap-card";
 
   const cardImg = document.createElement("img");
-  cardImg.src = labelLink;
+  cardImg.src = labelLink || fallbackImage;
   cardImg.alt = brewName;
   cardImg.className = "tap-image";
+  cardImg.onerror = () => {
+    cardImg.src = fallbackImage;
+  };
 
   const cardContent = document.createElement("div");
   cardContent.className = "tap-content";
@@ -161,17 +166,21 @@ const startRotation = (
     container.classList.remove("fade-in");
     container.classList.add("fade-out");
 
-    setTimeout(() => {
-      container.innerHTML = "";
-      for (const wrapper of pages[pageIndex]) {
-        container.appendChild(wrapper);
-      }
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        container.innerHTML = "";
+        for (const wrapper of pages[pageIndex]) {
+          container.appendChild(wrapper);
+        }
 
-      container.classList.remove("fade-out");
-      container.classList.add("fade-in");
+        requestAnimationFrame(() => {
+          container.classList.remove("fade-out");
+          container.classList.add("fade-in");
+        });
 
-      pageIndex = (pageIndex + 1) % pages.length;
-    }, 600);
+        pageIndex = (pageIndex + 1) % pages.length;
+      }, 300);
+    });
   };
 
   if (pages.length > 1) {
@@ -196,7 +205,13 @@ const handleUpdate = async () => {
 
     const selectedTheme = themes[activeTheme];
     currentThemes = themes;
-    setStyles(selectedTheme);
+    const combinedStyles = {
+      ...selectedTheme,
+      "font-size-body": data["font-size-body"],
+      "card-min-width": data["card-min-width"],
+    };
+
+    setStyles(combinedStyles);
 
     container.innerHTML = "";
 

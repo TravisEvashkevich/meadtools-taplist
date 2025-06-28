@@ -1,5 +1,5 @@
 let data: TapData;
-let images: string[];
+let globalImageStore: string[];
 
 const newTapBtn = document.getElementById("new-tap-button")!;
 const newTapFormContainer = document.getElementById("new-tap-form-container")!;
@@ -19,8 +19,14 @@ const textColorInput = document.getElementById(
 const cardBorderColorInput = document.getElementById(
   "card-border-color"
 )! as HTMLInputElement;
+const fontSizeInput = document.getElementById(
+  "font-size-body"
+)! as HTMLInputElement;
 const cardBorderRadiusInput = document.getElementById(
   "card-border-radius"
+)! as HTMLInputElement;
+const cardMinimumWidth = document.getElementById(
+  "card-min-width"
 )! as HTMLInputElement;
 const titleInput = document.getElementById("taplist-name") as HTMLInputElement;
 const form = document.getElementById("image-upload-form") as HTMLFormElement;
@@ -31,7 +37,9 @@ const dropZone = document.getElementById("drop-zone")!;
 
 const fetchData = async () => {
   try {
-    const res = await fetch("./taplist.json");
+    const res = await fetch(`./taplist.json?ts=${Date.now()}`, {
+      cache: "no-store",
+    });
     const parsed: TapData = await res.json();
     data = parsed;
   } catch (err) {
@@ -41,7 +49,7 @@ const fetchData = async () => {
 
 const setup = async () => {
   await fetchData();
-  images = await loadImages();
+  globalImageStore = await loadImages();
   updateTaplist();
 
   newTapBtn.onclick = () => {
@@ -96,6 +104,27 @@ const setup = async () => {
     setCSSVariables(data.themes[data.activeTheme]);
   };
 
+  cardMinimumWidth.onchange = persistUpdates;
+  cardMinimumWidth.value = (data["card-min-width"] ?? 500).toString();
+  cardMinimumWidth.oninput = (e) => {
+    const input = e.target as HTMLInputElement;
+    const px = parseFloat(input.value);
+    data["card-min-width"] = px;
+    document.documentElement.style.setProperty("--card-min-width", `${px}px`);
+  };
+  cardMinimumWidth.onchange = persistUpdates;
+
+  fontSizeInput.onchange = async (e) => {
+    const input = e.target as HTMLInputElement;
+    data["font-size-body"] = `${input.value}rem`;
+    document.documentElement.style.setProperty(
+      "--font-size-body",
+      `${input.value}rem`
+    );
+    persistUpdates();
+  };
+  fontSizeInput.value = data["font-size-body"] ?? "1rem";
+
   setCSSVariables(currentTheme);
 
   const fadeInput = document.getElementById(
@@ -127,9 +156,10 @@ const setup = async () => {
       body: formData,
     });
 
-    const result = await res.text();
-    console.log(result);
-    await loadImages();
+    await res.text();
+
+    globalImageStore = await loadImages();
+    updateAllImageSelects();
   };
 
   // Show file name
@@ -253,7 +283,8 @@ const loadImages = async () => {
       );
       if (userConfirmation) {
         await fetch(`/delete-image/${filename}`, { method: "DELETE" });
-        loadImages();
+        globalImageStore = await loadImages();
+        updateAllImageSelects();
       }
     };
 
@@ -287,6 +318,7 @@ const createImageSelect = (selected: string) => {
   const select = document.createElement("select");
   select.id = `image-select-${Date.now()}`;
   select.style.maxWidth = "300px"; // avoid overflow
+  select.classList.add("image-select");
 
   const preview = document.createElement("img");
   preview.src = selected;
@@ -295,7 +327,7 @@ const createImageSelect = (selected: string) => {
   preview.style.borderRadius = "0.25rem";
   preview.style.objectFit = "contain";
 
-  images.forEach((filename) => {
+  globalImageStore.forEach((filename) => {
     const path = `/images/${filename}`;
     const option = document.createElement("option");
     option.value = path;
@@ -317,7 +349,50 @@ const createImageSelect = (selected: string) => {
 
   return { label, select };
 };
+function updateAllImageSelects() {
+  const selects = document.querySelectorAll<HTMLSelectElement>(
+    "select.image-select"
+  );
 
+  selects.forEach((select) => {
+    const currentValue = select.value;
+    const preview = select.nextElementSibling as HTMLImageElement;
+    const defaultImage = "./images/defaultImage.png";
+
+    // Remove options not in globalImageStore
+    Array.from(select.options).forEach((opt) => {
+      const filename = opt.textContent!;
+      if (!globalImageStore.includes(filename)) {
+        opt.remove();
+      }
+    });
+
+    // Rebuild value set
+    const existingPaths = new Set(
+      Array.from(select.options).map((opt) => opt.value)
+    );
+
+    // Add new image options
+    globalImageStore.forEach((filename) => {
+      const path = `/images/${filename}`;
+      if (!existingPaths.has(path)) {
+        const option = document.createElement("option");
+        option.value = path;
+        option.textContent = filename;
+        select.appendChild(option);
+      }
+    });
+
+    // If current value is gone, reset to default
+    const stillExists = globalImageStore.some(
+      (filename) => `/images/${filename}` === currentValue
+    );
+    if (!stillExists) {
+      select.value = defaultImage;
+      if (preview) preview.src = defaultImage;
+    }
+  });
+}
 const createInput = (
   labelText: string,
   value: string | number,
