@@ -77,4 +77,59 @@ Includes:
 
 ---
 
+---
+
+## 🧰 Headless Version (No HDMI, No Access Point)
+
+If you’re running a Raspberry Pi without a display or want to host the taplist UI remotely (e.g., Android app, smart TV, Google TV, etc.), you can use the headless image or install the headless setup manually.
+
+⚠️ Important: The headless version requires network access to function. Be sure to:
+
+- Use Raspberry Pi Imager’s Advanced Settings to preconfigure Wi-Fi and enable SSH, or
+- Plug in a USB Ethernet adapter
+
+Otherwise, you will not be able to reach the Pi to view or edit the taplist.
+
+### Option 1: Use the Prebuilt Headless OS Image
+
+**➡️ [Get the Headless Image Release](https://github.com/ljreaux/meadtools-taplist/releases)** (look for `MeadTools-Taplist-Headless.img.gz`)
+
+#### How to Flash the Image
+
+1. Download the `MeadTools-Taplist-Headless.img.gz` file
+2. Flash it to a microSD card using [Raspberry Pi Imager](https://www.raspberrypi.com/software/) or [Balena Etcher](https://etcher.io/)
+3. (Optional but recommended) Use Raspberry Pi Imager’s "Advanced" settings to preconfigure Wi-Fi and enable SSH
+4. Boot the Pi — the server will run in the background at `http://<pi-ip>:5000`
+
+You can then point any smart device, browser, or app to the Pi’s IP address to load the display.
+
+---
+
+### 📷 Recommended Raspberry Pi Imager Settings
+
+If you're using the headless version, you should configure advanced settings in Raspberry Pi Imager **before flashing** the image.
+
+> These settings will allow your device to boot with Wi-Fi and SSH enabled, and you'll be able to access the taplist server at:  
+> **[`http://meadtools-taplist.local:5000`](http://meadtools-taplist.local:5000)**
+
+## ![Example Advanced Settings](./advanced-settings-example.png)
+
+### Option 2: Headless One-Line Setup (Lite OS OK)
+
+If you already have a Raspberry Pi with 32-bit **Lite** Raspberry Pi OS installed:
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/ljreaux/meadtools-taplist/main/pi/headless-setup.sh)
+```
+
+This will:
+
+- Download and install only the server bundle
+- Set up the Flask server to run on boot
+- Serve the taplist UI at `http://meadtools-taplist:5000`
+
+> You can then display the interface from any device on the network.
+
+---
+
 Need help? [Open an issue](https://github.com/ljreaux/meadtools-taplist/issues).
