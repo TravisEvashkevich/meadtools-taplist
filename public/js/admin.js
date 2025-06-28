@@ -275,6 +275,18 @@ const generateTapItem = (tap, container) => {
     const { label: dateLabel, input: dateInput } = createInput("Date Added", new Date(tap.dateAdded).toISOString().split("T")[0], "date");
     const { label: labelImageLabel, select: labelImageSelect } = createImageSelect(tap.labelLink);
     labelImageSelect.disabled = true;
+    const containerTypeLabel = document.createElement("label");
+    containerTypeLabel.textContent = "Container Type";
+    const containerTypeSelect = document.createElement("select");
+    ["Keg", "Bottle", "Can", "Growler"].forEach((type) => {
+        const option = document.createElement("option");
+        option.value = type.toLowerCase(); // store lowercase value
+        option.textContent = type; // show capitalized label
+        containerTypeSelect.appendChild(option);
+    });
+    containerTypeSelect.disabled = true;
+    containerTypeSelect.value = tap.containerType;
+    containerTypeLabel.appendChild(containerTypeSelect);
     const descLabel = document.createElement("label");
     const descInput = document.createElement("textarea");
     descInput.disabled = true;
@@ -318,6 +330,7 @@ const generateTapItem = (tap, container) => {
             dateInput,
             descInput,
             labelImageSelect,
+            containerTypeSelect,
         ].forEach((el) => (el.disabled = false));
         editBtn.classList.add("hidden");
         moveUpBtn.classList.add("hidden");
@@ -343,6 +356,7 @@ const generateTapItem = (tap, container) => {
             dateInput,
             descInput,
             labelImageSelect,
+            containerTypeSelect,
         ].forEach((el) => (el.disabled = true));
         cancelBtn.classList.add("hidden");
         submitBtn.classList.add("hidden");
@@ -394,6 +408,7 @@ const generateTapItem = (tap, container) => {
             labelLink: labelImageSelect.value,
             dateAdded: new Date(dateInput.value).getTime(),
             description: descInput.value,
+            containerType: containerTypeSelect.value,
         };
         const index = data.taps.findIndex((t) => t.id === tap.id);
         if (index !== -1) {
@@ -409,6 +424,7 @@ const generateTapItem = (tap, container) => {
             dateInput,
             descInput,
             labelImageSelect,
+            containerTypeSelect,
         ].forEach((el) => (el.disabled = true));
         cancelBtn.classList.add("hidden");
         submitBtn.classList.add("hidden");
@@ -420,7 +436,7 @@ const generateTapItem = (tap, container) => {
     const buttonRow = document.createElement("div");
     buttonRow.classList.add("button-row");
     buttonRow.append(editBtn, deleteBtn, moveUpBtn, moveDownBtn, cancelBtn, submitBtn);
-    tapContainer.append(nameLabel, categoryLabel, styleLabel, abvLabel, labelImageLabel, dateLabel, descLabel, buttonRow);
+    tapContainer.append(nameLabel, categoryLabel, styleLabel, abvLabel, dateLabel, containerTypeLabel, labelImageLabel, descLabel, buttonRow);
     container.appendChild(tapContainer);
 };
 const generateNewTapForm = (container) => {
@@ -433,9 +449,27 @@ const generateNewTapForm = (container) => {
     const { label: styleLabel, input: styleInput } = createInput("Style", "", "text", "style-options");
     const { label: abvLabel, input: abvInput } = createInput("ABV", "", "number", undefined, "0.01");
     const { label: dateLabel, input: dateInput } = createInput("Date Added", today, "date");
-    [nameInput, categoryInput, styleInput, abvInput, dateInput].forEach((input) => (input.disabled = false));
     const { label: labelImageLabel, select: labelImageSelect } = createImageSelect("./images/defaultImage.png");
     labelImageSelect.disabled = false;
+    const containerTypeLabel = document.createElement("label");
+    containerTypeLabel.textContent = "Container Type";
+    const containerTypeSelect = document.createElement("select");
+    ["Keg", "Bottle", "Can", "Growler"].forEach((type) => {
+        const option = document.createElement("option");
+        option.value = type.toLowerCase(); // store lowercase value
+        option.textContent = type; // show capitalized label
+        containerTypeSelect.appendChild(option);
+    });
+    containerTypeSelect.disabled = false;
+    containerTypeLabel.appendChild(containerTypeSelect);
+    [
+        nameInput,
+        categoryInput,
+        styleInput,
+        abvInput,
+        dateInput,
+        containerTypeSelect,
+    ].forEach((input) => (input.disabled = false));
     const descLabel = document.createElement("label");
     const descInput = document.createElement("textarea");
     descInput.disabled = false;
@@ -462,6 +496,7 @@ const generateNewTapForm = (container) => {
             labelLink: labelImageSelect.value,
             dateAdded: new Date(dateInput.value).getTime(),
             description: descInput.value,
+            containerType: containerTypeSelect.value,
         };
         data.taps.push(newTap);
         persistUpdates();
@@ -473,7 +508,7 @@ const generateNewTapForm = (container) => {
     const buttonRow = document.createElement("div");
     buttonRow.classList.add("button-row");
     buttonRow.append(cancelBtn, submitBtn);
-    form.append(nameLabel, categoryLabel, styleLabel, abvLabel, labelImageLabel, dateLabel, descLabel, buttonRow);
+    form.append(nameLabel, categoryLabel, styleLabel, abvLabel, dateLabel, containerTypeLabel, labelImageLabel, descLabel, buttonRow);
     container.appendChild(form);
 };
 const handleColorChange = (e) => {

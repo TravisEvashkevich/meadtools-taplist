@@ -7,6 +7,7 @@ type Tap = {
   labelLink: string;
   dateAdded: number;
   description: string;
+  containerType: string;
 };
 
 type TapList = Tap[];
