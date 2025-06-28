@@ -3,6 +3,7 @@ body {
   padding: 1rem;
   overflow: auto;
   cursor: auto;
+  font-size: 1rem;
 }
 
 .hidden {
@@ -316,4 +317,8 @@ button:disabled {
 
 #new-tap-form-container {
   margin-block: 1rem;
+}
+
+.tap-card {
+  width: var(--card-min-width);
 }

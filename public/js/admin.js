@@ -1,6 +1,6 @@
 "use strict";
 let data;
-let images;
+let globalImageStore;
 const newTapBtn = document.getElementById("new-tap-button");
 const newTapFormContainer = document.getElementById("new-tap-form-container");
 const themeToggle = document.getElementById("theme-toggle");
@@ -9,7 +9,9 @@ const customThemeEditor = document.getElementById("custom-theme-editor");
 const backgroundColorInput = document.getElementById("bg-color");
 const textColorInput = document.getElementById("text-color");
 const cardBorderColorInput = document.getElementById("card-border-color");
+const fontSizeInput = document.getElementById("font-size-body");
 const cardBorderRadiusInput = document.getElementById("card-border-radius");
+const cardMinimumWidth = document.getElementById("card-min-width");
 const titleInput = document.getElementById("taplist-name");
 const form = document.getElementById("image-upload-form");
 const tapContainer = document.getElementById("on-tap");
@@ -18,7 +20,9 @@ const fileNameDisplay = document.getElementById("file-name");
 const dropZone = document.getElementById("drop-zone");
 const fetchData = async () => {
     try {
-        const res = await fetch("./taplist.json");
+        const res = await fetch(`./taplist.json?ts=${Date.now()}`, {
+            cache: "no-store",
+        });
         const parsed = await res.json();
         data = parsed;
     }
@@ -28,7 +32,7 @@ const fetchData = async () => {
 };
 const setup = async () => {
     await fetchData();
-    images = await loadImages();
+    globalImageStore = await loadImages();
     updateTaplist();
     newTapBtn.onclick = () => {
         if (!newTapFormContainer.innerHTML) {
@@ -70,6 +74,22 @@ const setup = async () => {
         data.themes[data.activeTheme]["card-border-radius"] = parseFloat(input.value);
         setCSSVariables(data.themes[data.activeTheme]);
     };
+    cardMinimumWidth.onchange = persistUpdates;
+    cardMinimumWidth.value = (data["card-min-width"] ?? 500).toString();
+    cardMinimumWidth.oninput = (e) => {
+        const input = e.target;
+        const px = parseFloat(input.value);
+        data["card-min-width"] = px;
+        document.documentElement.style.setProperty("--card-min-width", `${px}px`);
+    };
+    cardMinimumWidth.onchange = persistUpdates;
+    fontSizeInput.onchange = async (e) => {
+        const input = e.target;
+        data["font-size-body"] = `${input.value}rem`;
+        document.documentElement.style.setProperty("--font-size-body", `${input.value}rem`);
+        persistUpdates();
+    };
+    fontSizeInput.value = data["font-size-body"] ?? "1rem";
     setCSSVariables(currentTheme);
     const fadeInput = document.getElementById("fade-time-seconds");
     fadeInput.value = (data.fadeTime / 1000).toString();
@@ -94,9 +114,9 @@ const setup = async () => {
             method: "POST",
             body: formData,
         });
-        const result = await res.text();
-        console.log(result);
-        await loadImages();
+        await res.text();
+        globalImageStore = await loadImages();
+        updateAllImageSelects();
     };
     // Show file name
     const handleFile = (file) => {
@@ -197,7 +217,8 @@ const loadImages = async () => {
             const userConfirmation = confirm("Are you sure? This action cannot be undone.");
             if (userConfirmation) {
                 await fetch(`/delete-image/${filename}`, { method: "DELETE" });
-                loadImages();
+                globalImageStore = await loadImages();
+                updateAllImageSelects();
             }
         };
         wrapper.append(img, caption, del);
@@ -226,13 +247,14 @@ const createImageSelect = (selected) => {
     const select = document.createElement("select");
     select.id = `image-select-${Date.now()}`;
     select.style.maxWidth = "300px"; // avoid overflow
+    select.classList.add("image-select");
     const preview = document.createElement("img");
     preview.src = selected;
     preview.alt = "Preview";
     preview.style.maxHeight = "60px";
     preview.style.borderRadius = "0.25rem";
     preview.style.objectFit = "contain";
-    images.forEach((filename) => {
+    globalImageStore.forEach((filename) => {
         const path = `/images/${filename}`;
         const option = document.createElement("option");
         option.value = path;
@@ -251,6 +273,40 @@ const createImageSelect = (selected) => {
     label.appendChild(wrapper);
     return { label, select };
 };
+function updateAllImageSelects() {
+    const selects = document.querySelectorAll("select.image-select");
+    selects.forEach((select) => {
+        const currentValue = select.value;
+        const preview = select.nextElementSibling;
+        const defaultImage = "./images/defaultImage.png";
+        // Remove options not in globalImageStore
+        Array.from(select.options).forEach((opt) => {
+            const filename = opt.textContent;
+            if (!globalImageStore.includes(filename)) {
+                opt.remove();
+            }
+        });
+        // Rebuild value set
+        const existingPaths = new Set(Array.from(select.options).map((opt) => opt.value));
+        // Add new image options
+        globalImageStore.forEach((filename) => {
+            const path = `/images/${filename}`;
+            if (!existingPaths.has(path)) {
+                const option = document.createElement("option");
+                option.value = path;
+                option.textContent = filename;
+                select.appendChild(option);
+            }
+        });
+        // If current value is gone, reset to default
+        const stillExists = globalImageStore.some((filename) => `/images/${filename}` === currentValue);
+        if (!stillExists) {
+            select.value = defaultImage;
+            if (preview)
+                preview.src = defaultImage;
+        }
+    });
+}
 const createInput = (labelText, value, type = "text", list, step) => {
     const label = document.createElement("label");
     const input = document.createElement("input");
