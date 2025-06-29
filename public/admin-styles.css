@@ -37,6 +37,10 @@ select {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
 
 input:not([type="range"]):not([type="color"]):focus,
 select:focus,
