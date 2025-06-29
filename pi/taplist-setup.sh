@@ -43,8 +43,8 @@ $PYTHON_EXEC -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-echo "🧷 Creating systemd service..."
-POST_SCRIPT="-$USER_HOME/taplist-setup/pi/post-taplist-start.sh"
+echo "🧷 Creating $SERVICE_NAME..."
+POST_SCRIPT="$USER_HOME/taplist-setup/pi/post-taplist-start.sh"
 sudo tee /etc/systemd/system/$SERVICE_NAME > /dev/null <<EOF
 [Unit]
 Description=MeadTools Taplist Server and Kiosk
@@ -74,20 +74,20 @@ cat <<EOF > "$KIOSK_SCRIPT"
 #!/bin/bash
 
 LOG_DIR="$USER_HOME"
-TIMESTAMP=$(date)
-KIOSK_LOG="$LOG_DIR/kiosk.log"
+TIMESTAMP=\$(date)
+KIOSK_LOG="\$LOG_DIR/kiosk.log"
 
-PI_HOSTNAME=$(hostname)
-APP_URL="http://${PI_HOSTNAME}.local:5000"
+PI_HOSTNAME=\$(hostname)
+APP_URL="http://\${PI_HOSTNAME}.local:5000"
 
-echo "$TIMESTAMP: Starting Chromium kiosk pointed at $APP_URL" >> "$KIOSK_LOG"
+echo "\$TIMESTAMP: Starting Chromium kiosk pointed at \$APP_URL" >> "\$KIOSK_LOG"
 
-until curl --output /dev/null --silent --head --fail "$APP_URL"; do
-  echo "$TIMESTAMP: Waiting for server..." >> "$KIOSK_LOG"
+until curl --output /dev/null --silent --head --fail "\$APP_URL"; do
+  echo "\$TIMESTAMP: Waiting for server..." >> "\$KIOSK_LOG"
   sleep 2
 done
 
-chromium-browser --kiosk --app=\$APP_URL \
+chromium-browser --kiosk --app="\$APP_URL" \
   --noerrdialogs \
   --disable-infobars \
   --incognito \
@@ -99,22 +99,31 @@ EOF
 
 chmod +x "$KIOSK_SCRIPT"
 
-echo "📺 Creating kiosk-launch.desktop autostart entry..."
-AUTOSTART_DIR="$USER_HOME/.config/autostart"
-mkdir -p "$AUTOSTART_DIR"
-cat <<EOF > "$AUTOSTART_DIR/kiosk-launch.desktop"
-[Desktop Entry]
-Type=Application
-Name=Kiosk Launch
-Exec=$KIOSK_SCRIPT
-X-GNOME-Autostart-enabled=true
+echo "🧷 Creating kiosk-launch.service..."
+sudo tee /etc/systemd/system/kiosk-launch.service > /dev/null <<EOF
+[Unit]
+Description=Start Chromium in Kiosk Mode
+After=graphical.target network-online.target
+Requires=network-online.target
+
+[Service]
+User=$USER
+Environment=DISPLAY=:0
+Environment=XDG_RUNTIME_DIR=/run/user/$(id -u $USER)
+ExecStart=$KIOSK_SCRIPT
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target
 EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable kiosk-launch.service
 
 echo "📡 Running setup-access-point.sh to configure local Wi-Fi..."
 bash "$SCRIPT_DIR/setup-access-point.sh"
 
 echo "📶 Ensuring Wi-Fi stays unblocked on boot..."
-
 sudo tee /etc/systemd/system/unblock-wifi.service > /dev/null <<EOF
 [Unit]
 Description=Unblock Wi-Fi at boot
@@ -132,6 +141,5 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable unblock-wifi.service
 
-
-echo "✅ Setup complete. Server should now be running on http://localhost:5000"
-echo "🧪 Reboot the Pi to verify everything starts automatically."
+echo "✅ Setup complete. Server and kiosk should launch automatically on boot."
+echo "🧪 Reboot the Pi to test everything: sudo reboot"
