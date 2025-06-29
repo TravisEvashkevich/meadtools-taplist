@@ -74,14 +74,16 @@ cat <<EOF > "$KIOSK_SCRIPT"
 #!/bin/bash
 
 LOG_DIR="$USER_HOME"
-TIMESTAMP=\$(date)
-KIOSK_LOG="\$LOG_DIR/kiosk.log"
-APP_URL="http://localhost:5000"
+TIMESTAMP=$(date)
+KIOSK_LOG="$LOG_DIR/kiosk.log"
 
-echo "\$TIMESTAMP: Starting Chromium kiosk pointed at \$APP_URL" >> "\$KIOSK_LOG"
+PI_HOSTNAME=$(hostname)
+APP_URL="http://${PI_HOSTNAME}.local:5000"
 
-until curl --output /dev/null --silent --head --fail "\$APP_URL"; do
-  echo "\$TIMESTAMP: Waiting for server..." >> "\$KIOSK_LOG"
+echo "$TIMESTAMP: Starting Chromium kiosk pointed at $APP_URL" >> "$KIOSK_LOG"
+
+until curl --output /dev/null --silent --head --fail "$APP_URL"; do
+  echo "$TIMESTAMP: Waiting for server..." >> "$KIOSK_LOG"
   sleep 2
 done
 
