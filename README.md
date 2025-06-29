@@ -8,7 +8,7 @@ This project powers the **MeadTools Taplist Display System**, a full-screen tapl
 
 Download the full Raspberry Pi OS image with everything preinstalled and ready to go.
 
-**➡️ [Get the Latest Image Release](https://github.com/ljreaux/meadtools-taplist/releases)** (look for `MeadTools-Taplist.img.gz`)
+**➡️ [Get the Latest Image Release](https://github.com/ljreaux/meadtools-taplist-os/releases/latest)**
 
 ### How to Flash the Image
 
@@ -103,7 +103,7 @@ Otherwise, you will not be able to reach the Pi to view or edit the taplist.
 
 ### Option 1: Use the Prebuilt Headless OS Image
 
-**➡️ [Get the Headless Image Release](https://github.com/ljreaux/meadtools-taplist/releases)** (look for `MeadTools-Taplist-Headless.img.gz`)
+**➡️ [Get the Headless Image Release](https://github.com/ljreaux/meadtools-taplist-os/releases/latest)**
 
 #### How to Flash the Image
 
