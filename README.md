@@ -16,10 +16,21 @@ Download the full Raspberry Pi OS image with everything preinstalled and ready t
 2. Flash it to a microSD card (16 GB or larger) using:
    - [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
    - OR [Balena Etcher](https://etcher.io/)
-3. Insert the card and boot your Raspberry Pi
-4. The taplist display will launch automatically, and a Wi-Fi network named **Taplist Admin** will appear for editing
 
----
+### ⚠️ Important Behavior Notes
+
+- If you **do not preconfigure Wi-Fi** (recommended for beginners):
+
+  - The Pi will boot into **Access Point mode**
+  - A Wi-Fi network named **`Taplist Admin`** will appear
+  - A **captive portal** will automatically show the admin dashboard
+
+- If you **do preconfigure Wi-Fi** (e.g. using Raspberry Pi Imager’s Advanced Settings):
+  - The Pi will **skip** Access Point mode and connect to your Wi-Fi
+  - You must visit `http://<your-hostname>.local:5000/admin` or `http://<your-pi-ip>:5000/admin` to access the dashboard
+  - This is useful for environments where the Pi is connected via Ethernet or joins a secure LAN
+
+> 🧠 Tip: If you’re unsure, leave Wi-Fi unconfigured and use the access point for first-time setup.
 
 ## 🛠 Option 2: Install on Existing Raspberry Pi OS
 

@@ -44,7 +44,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 echo "🧷 Creating $SERVICE_NAME..."
-POST_SCRIPT="$USER_HOME/taplist-setup/pi/post-taplist-start.sh"
+POST_SCRIPT="-$USER_HOME/taplist-setup/pi/post-taplist-start.sh"
 sudo tee /etc/systemd/system/$SERVICE_NAME > /dev/null <<EOF
 [Unit]
 Description=MeadTools Taplist Server and Kiosk
