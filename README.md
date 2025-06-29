@@ -140,6 +140,9 @@ This will:
 - Serve the taplist UI at `http://meadtools-taplist:5000`
 
 > You can then display the interface from any device on the network.
+> ⚠️ **Important Note:** If your Raspberry Pi is already connected to Wi-Fi before running this script (e.g. configured via Imager or ethernet), the access point will be skipped and the admin interface will only be reachable at `http://<your-hostname>.local:5000/admin` or `http://<your-pi-ip>:5000/admin`.
+
+> 📛 If you change the Pi’s hostname, the `.local` address will reflect that (e.g., `http://my-custom-name.local:5000`).
 
 ---
 
