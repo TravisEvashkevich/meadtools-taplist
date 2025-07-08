@@ -67,7 +67,7 @@ sudo tee /$USER_HOME/.config/autostart/taplist-gui.desktop > /dev/null <<EOF
 Version=1.0
 Name=Taplist-Gui
 Comment=PyQt5 gui for the Taplist service
-Exec=$INSTALL_DIR/server/venv/bin/python $INSTALL_DIR/public/taplist.py 
+Exec=env export QT_QPA_PLATFORM=linuxfb $INSTALL_DIR/server/venv/bin/python $INSTALL_DIR/public/taplist.py 
 Icon=$INSTALL_DIR/public/images/defaultImage.png
 Path=/home/pi/taplist-server/public
 Terminal=false
