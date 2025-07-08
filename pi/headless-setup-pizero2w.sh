@@ -23,6 +23,9 @@ echo "📁 Preparing install directory..."
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
 
+sudo apt install python-pyqt5
+sudo export QT_QPA_PLATFORM=linuxfb
+
 echo "📦 Downloading latest taplist release..."
 latest_url=$(curl -s https://api.github.com/repos/ljreaux/meadtools-taplist/releases/latest | jq -r '.assets[] | select(.name == "flask-bundle.zip") | .browser_download_url')
 curl -L "$latest_url" -o release.zip
