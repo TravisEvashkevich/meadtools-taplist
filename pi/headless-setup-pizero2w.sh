@@ -33,7 +33,7 @@ rm release.zip
 
 echo "🐍 Setting up Python virtual environment..."
 cd server
-$PYTHON_EXEC -m venv venv
+$PYTHON_EXEC -m venv venv --system-site-packages
 source venv/bin/activate
 pip install -r requirements.txt
 
