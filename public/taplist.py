@@ -366,6 +366,13 @@ class RotatingTapList(QtWidgets.QMainWindow):
         super().__init__()
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.showFullScreen()
+
+        # hide the mouse cursor
+        transparent_pixmap = QtGui.QPixmap(16, 16)
+        transparent_pixmap.fill(QtCore.Qt.transparent)
+        transparent_cursor = QtGui.QCursor(transparent_pixmap)
+        self.setCursor(transparent_cursor)
+
         self.screen_size = screen.size()
         self.widget_data_file = widget_data_file
         self.widget_data = None
@@ -401,7 +408,8 @@ class RotatingTapList(QtWidgets.QMainWindow):
         self.main_lay.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         central.setLayout(self.main_lay)
         self.setCentralWidget(central)
-
+        self.fade_out_group = None
+        self.fade_in_group = None
         # Timer
         self.timer = QtCore.QTimer(self)
         self.timer.timeout.connect(self.next_batch)
@@ -413,9 +421,18 @@ class RotatingTapList(QtWidgets.QMainWindow):
         self.timer.start(self.interval)
 
     def load_taplist_data(self):
+        """Get taplist.json data"""
         self.widget_data = json.loads(Path(self.widget_data_file).read_text())
 
     def rem_to_px(self, val):
+        """approx rem to px values
+
+        Args:
+            val (float/int): value to convert from rem to px
+
+        Returns:
+            float: float value (if converted, else you get the str back)
+        """
         if isinstance(val, str) and val.endswith("rem"):
             return float(val[:-3]) * 16
         return val
@@ -511,6 +528,12 @@ class RotatingTapList(QtWidgets.QMainWindow):
         self.timer.setInterval(self.interval)
 
     def show_current_batch(self, animated=True):
+        """If animating (e.g. we have more widgets than can be displayed in one screen) handle removing the
+        current widgets from the flowlayout and then fade in the next ones
+
+        Args:
+            animated (bool, optional): whether we should animate or not. Defaults to True.
+        """
         if not animated:
             return
         # Remove old widgets
@@ -537,7 +560,7 @@ class RotatingTapList(QtWidgets.QMainWindow):
             w.setGraphicsEffect(effect)
             effect.setOpacity(0)
         # Fade in
-        fade_in_group = QtCore.QParallelAnimationGroup(self)
+        self.fade_in_group = QtCore.QParallelAnimationGroup(self)
         for w in self.curr_widgets:
             effect = w.graphicsEffect()
             anim = QtCore.QPropertyAnimation(effect, b"opacity")
@@ -545,10 +568,11 @@ class RotatingTapList(QtWidgets.QMainWindow):
             anim.setStartValue(0)
             anim.setEndValue(1)
             anim.setEasingCurve(QtCore.QEasingCurve.InOutQuad)
-            fade_in_group.addAnimation(anim)
-        fade_in_group.start()
+            self.fade_in_group.addAnimation(anim)
+        self.fade_in_group.start()
 
     def next_batch(self):
+        """if we have widgets, fade out current ones"""
         if not self.curr_widgets:
             return
 
@@ -568,10 +592,10 @@ class RotatingTapList(QtWidgets.QMainWindow):
             anim.setEndValue(0)
             anim.setEasingCurve(QtCore.QEasingCurve.InOutQuad)
             self.fade_out_group.addAnimation(anim)
-        self.fade_out_group.finished.connect(self._on_fade_out_done)
+        self.fade_out_group.finished.connect(self.on_fade_out_done)
         self.fade_out_group.start(QtCore.QAbstractAnimation.DeleteWhenStopped)
 
-    def _on_fade_out_done(self):
+    def on_fade_out_done(self):
         # Now it is safe to remove widgets
         while self.flow_layout.count():
             item = self.flow_layout.takeAt(0)
@@ -583,16 +607,12 @@ class RotatingTapList(QtWidgets.QMainWindow):
         self.show_current_batch()
 
     def stop_animations(self):
-        for attr in ["fade_in_group", "fade_out_group"]:
-            anim_group = getattr(self, attr, None)
-            if anim_group is not None:
-                # Try/except in case the object was deleted
-                try:
-                    if anim_group.state() == QtCore.QAbstractAnimation.Running:
-                        anim_group.stop()
-                except RuntimeError:
-                    # The animation object has already been deleted
-                    pass
+        if self.fade_out_group:
+            self.fade_out_group.clear()
+            self.fade_out_group = None
+        if self.fade_in_group:
+            self.fade_in_group.clear()
+            self.fade_in_group = None
 
     def on_file_changed(self):
         self.stop_animations()
@@ -609,6 +629,7 @@ class EscapeFilter(QtCore.QObject):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.BlankCursor))
     escape_filter = EscapeFilter()
     app.installEventFilter(escape_filter)
     screen = app.primaryScreen()
