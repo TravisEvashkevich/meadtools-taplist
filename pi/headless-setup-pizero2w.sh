@@ -15,6 +15,7 @@ sudo apt install -y \
   $PYTHON_EXEC \
   python3-pip \
   python3-venv \
+  python3-pyqt5 \
   curl \
   unzip \
   jq
@@ -22,9 +23,6 @@ sudo apt install -y \
 echo "📁 Preparing install directory..."
 mkdir -p "$INSTALL_DIR"
 cd "$INSTALL_DIR"
-
-sudo apt install python-pyqt5
-sudo export QT_QPA_PLATFORM=linuxfb
 
 echo "📦 Downloading latest taplist release..."
 latest_url=$(curl -s https://api.github.com/repos/ljreaux/meadtools-taplist/releases/latest | jq -r '.assets[] | select(.name == "flask-bundle.zip") | .browser_download_url')
@@ -63,21 +61,23 @@ sudo systemctl daemon-reload
 sudo systemctl enable $SERVICE_NAME
 sudo systemctl start $SERVICE_NAME
 
-echo "🧷 Creating taplist-gui autostart script..."
+echo "🧷 Creating taplist-gui autostart scripts..."
 mkdir -p /$USER_HOME/.config/autostart
+
 sudo tee /$USER_HOME/.config/autostart/taplist-gui.desktop > /dev/null <<EOF
 [Desktop Entry]
 Version=1.0
 Name=Taplist-Gui
 Comment=PyQt5 gui for the Taplist service
-Exec=env export QT_QPA_PLATFORM=linuxfb $INSTALL_DIR/server/venv/bin/python $INSTALL_DIR/public/taplist.py 
-Icon=$INSTALL_DIR/public/images/defaultImage.png
+Exec=$INSTALL_DIR/server/venv/bin/python $INSTALL_DIR/public/taplist.py
+Icon=/home/pi/taplist-server/public/images/defaultImage.png
 Path=/home/pi/taplist-server/public
 Terminal=false
 StartupNotify=true
 Type=Application
 Categories=Utility;Application;
-EOF
 
+EOF
+private_ip=$(hostname -I | awk '{print $1}')
 echo "✅ Headless setup complete."
-echo "🌐 Visit http://<pi-ip>:5000 or http://meadtools-taplist.local:5000 from any device on the network."
+echo "🌐 Visit http://$private_ip:5000 or http://$HOSTNAME.local:5000 from any device on the network."
