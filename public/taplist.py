@@ -280,18 +280,21 @@ class Tap(QtWidgets.QFrame):
         self.lab_desc = VerticalMarqueeLabel(self.tap_data.get("description", "Order and find out!"), speed=200)
         self.lab_desc.setWordWrap(True)
         self.lab_desc.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        # print(self.lab_desc.text(), self.lab_desc.size())
+
         self.lab_styleAbv = QtWidgets.QLabel(f'{tap_data.get("style", "Unknown")} • {tap_data.get("abv", 0)}% ABV')
         self.lab_styleAbv.setWordWrap(True)
 
-        added_str = self.tap_list.added_dict.get(self.tap_data.get("containerType", "keg"))
+        if tap_data.get("category", "On Tap") != "Coming Soon":
+            added_str = self.tap_list.added_dict.get(self.tap_data.get("containerType", "keg"))
+        else:
+            added_str = "Coming Soon: "
         dt = datetime.datetime.fromtimestamp(self.tap_data.get("dateAdded", "0") / 1000)
         formatted = dt.strftime("%d/%m/%Y")
         packaged = f"{added_str}{formatted}"
         self.lab_added = QtWidgets.QLabel(packaged)
         self.lab_added.setWordWrap(True)
 
-        self.main_lay.addWidget(self.lab_icon)
+        self.main_lay.addWidget(self.lab_icon, alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignTop)
         self.layout.addWidget(self.lab_brewName)
         self.layout.addWidget(self.lab_desc)
         self.layout.addWidget(self.lab_styleAbv)
@@ -342,8 +345,8 @@ class Tap(QtWidgets.QFrame):
                 color: {text_color};
                 font-family: {font_family};
                 font-size: {self.font_size}pt;
-                margin:2px;
-                padding:2px;
+                margin:0px;
+                padding:0px;
             }}
 
         """
@@ -440,14 +443,13 @@ class RotatingTapList(QtWidgets.QMainWindow):
     def setup_theme(self):
         """make sure theme values are setup"""
         self.theme = self.widget_data.get("themes", {}).get(self.theme_name)
-        border_radius = f"{float(self.theme.get('card-border-radius', 0)) * 10}"
         font_family = self.theme.get("font-family", "sans-serif")
         bg_color = self.theme.get("bg-color", "#ffffff")
         text_color = self.theme.get("text-color", "#000000")
-        border_color = self.theme.get("card-border-color", "#ccc")
         font_size = f"{self.rem_to_px(self.widget_data.get('font-size-body', 18))}"
         padding = self.rem_to_px(self.theme.get("card-padding", "1rem"))
         self.card_gap = self.rem_to_px(self.theme.get("card-gap", "1.5rem"))
+        self.header_font_size = self.rem_to_px(self.widget_data.get("font-size-header", 30))
         self.setStyleSheet(
             f"""
             QWidget {{
@@ -455,21 +457,23 @@ class RotatingTapList(QtWidgets.QMainWindow):
                 color: {text_color};
                 padding: {padding};
                 font-family: {font_family};
-                font-size:{font_size}px;
+                font-size:{font_size}pt;
             }}
             QLabel#LabTapListName{{
-                font-size:30px;
+                font-size:{self.header_font_size}pt;
+                margin:0,5,0,5px;
+                padding:5px;
             }}
         """
         )
-        # print(f"card gap: {int(self.card_gap)}")
         self.flow_layout.setSpacing(int(self.card_gap))
+        self.lab_taplistName.setText(self.widget_data.get("title", "Tap List"))
 
     def setup_widgets(self):
         """Create widgetse and make sure data is updated"""
+        self.stop_animations()
         self.load_taplist_data()
         self.setup_theme()
-        self.stop_animations()
         self.interval = self.widget_data.get("fadeTime", 15000)
         self.tap_width = self.widget_data.get("card-min-width", 700)
         self.theme_name = self.widget_data.get("activeTheme", "dark")
@@ -490,24 +494,15 @@ class RotatingTapList(QtWidgets.QMainWindow):
         self.all_widgets = [Tap(tap, self.theme, tap_list=self, width=self.tap_width, parent=self) for tap in taps]
         if not len(self.all_widgets):
             return
+
         if not self.max_shown:
             self.all_widgets[0].show()
-            # print(f"widget wide: {self.all_widgets[0].width()}")
             self.max_widgets_wide = math.floor(self.screen_size.width() / (self.all_widgets[0].width() - self.card_gap))
             self.max_widgets_high = math.floor(
-                (
-                    self.screen_size.height()
-                    / (
-                        self.all_widgets[0].height()
-                        + (self.card_gap)
-                        + self.lab_taplistName.fontMetrics().height() * 1.3
-                    )
-                )
+                (self.screen_size.height() / (self.all_widgets[0].height() + (self.card_gap) + self.header_font_size))
             )
 
             self.max_shown = int(self.max_widgets_high * self.max_widgets_wide)
-            # print(f"Max to show: {self.max_shown}")
-            # print(self.max_widgets_wide, self.max_widgets_high, self.all_widgets[0].height())
 
         # set tap widths = so they still fill screen, but could potentially have more than 2 etc. per row
         if math.floor(self.max_widgets_high) == 1:
@@ -518,7 +513,7 @@ class RotatingTapList(QtWidgets.QMainWindow):
             for wid in self.all_widgets:
                 wid._width = (self.screen_size.width() / self.max_widgets_wide) - self.card_gap
                 wid._height = (self.screen_size.height() / self.max_widgets_high) - (
-                    self.card_gap + (self.lab_taplistName.fontMetrics().height() * 1.3)
+                    (self.card_gap) + (self.header_font_size)
                 )
                 # print(wid._width, wid._height)
                 wid.set_style()
