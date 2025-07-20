@@ -146,4 +146,31 @@ This will:
 
 ---
 
+## 🐍 Pi Zero 2 W GUI Version (Python App Instead of HTML)
+
+This option sets up a **Python-based GUI** instead of the browser-based taplist. It's optimized for the **Raspberry Pi Zero 2 W**, using a lightweight fullscreen Tkinter interface.
+
+Use this version if you want:
+
+- A **GUI application** instead of a browser UI
+- Better performance on low-memory hardware
+- An easy way to display the taplist without Chromium
+
+### One-Line Install (Pi Zero 2 W Recommended)
+
+Run this on a Pi Zero 2 W (with Raspberry Pi OS Lite or Full):
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/ljreaux/meadtools-taplist/main/pi/headless-setup-pizero2w.sh)
+```
+
+This will:
+
+- Install Python requirements
+- Download the Python GUI taplist app
+- Set up autostart in fullscreen mode
+- Serve local editing via browser at `http://<pi-ip>:5000/admin`
+
+> 💡 **Tip:** You can still access the web-based admin panel from any device on the network.
+
 Need help? [Open an issue](https://github.com/ljreaux/meadtools-taplist/issues).
